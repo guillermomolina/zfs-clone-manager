@@ -1,0 +1,1 @@
+pip install git+https://github.com/guillermomolina/zfs-history-manager#egg=zfs-history-manager
