@@ -18,6 +18,7 @@ import importlib
 import logging
 from zhm import __version__
 from zhm import zhm_config
+from zhm.cli.init import Init
 from zhm.cli.list import List
 from zhm.cli.create import Create
 from zhm.cli.activate import Activate
@@ -41,6 +42,7 @@ class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter,
 
 class CLI:
     commands = {
+        'init': Init,
         'ls': List,
         'create': Create,
         'activate': Activate,

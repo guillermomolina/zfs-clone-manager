@@ -48,6 +48,10 @@ class Manager:
         self.next_id = None
         self.load()
 
+    @staticmethod
+    def initialize_zfs(zfs, path):
+        raise ZHMError('NYI')
+
     def load(self):
         self.active = None
         if self.path.is_dir():
