@@ -20,7 +20,7 @@ import io
 
 log = logging.getLogger(__name__)
 
-def _zfs(command,  arguments=None, options=None, stdout=None):
+def get_cmd(command,  arguments, options):
     cmd = ['/usr/sbin/zfs', command]
     if options is not None:
         for option in options:
@@ -28,11 +28,26 @@ def _zfs(command,  arguments=None, options=None, stdout=None):
     if arguments is not None:
         cmd += arguments
     log.debug('Running command: "' + ' '.join(cmd) + '"')
+    return cmd    
+
+def _zfs(command,  arguments=None, options=None, stdout=None):
+    cmd = get_cmd(command, arguments, options)
     return subprocess.Popen(cmd, stdout=stdout)
 
 def zfs(command,  arguments=None, options=None):
-    process = _zfs(command, arguments, options)
-    stdout = process.communicate()[0]
+    cmd = get_cmd(command, arguments, options)
+    process = subprocess.run(cmd, capture_output=True, text=True)
+    #import debugpy
+    #debugpy.breakpoint()
+    if process.stdout:
+        for line in iter(process.stdout.splitlines()):
+            log.info(line)
+    if process.stderr:
+        for line in iter(process.stderr.splitlines()):
+            if process.returncode == 0:
+                log.warning(line)
+            else:
+                log.error(line)
     return process.returncode
 
 def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None):
@@ -80,12 +95,10 @@ def zfs_set(zfs_name, readonly=None, mountpoint=None, mounted=None):
             option += 'off'
         zfs('set', [option, zfs_name])
     if mounted is not None:
-        option = 'mounted='
         if mounted:
-            option += 'on'
+            zfs('mount', [zfs_name])
         else:
-            option += 'off'
-        zfs('set', [option, zfs_name])
+            zfs('unmount', [zfs_name])
     if mountpoint is not None:
         zfs('set', ['mountpoint=' + str(mountpoint), zfs_name])
 
@@ -144,7 +157,7 @@ def zfs_send(last_snapshot, target_file_path, first_snapshot=None, recursive=Fal
         arguments += ['-I', first_snapshot]
     arguments.append(last_snapshot)
     with open(target_file_path,'wb') as target_file:
-        return zfs('send', arguments, stdout=target_file)
+        return _zfs('send', arguments, stdout=target_file)
 
 def zfs_list(zfs_name=None, zfs_type=None, recursive=False,\
         properties=['name', 'used', 'avail', 'refer', 'mountpoint']):
