@@ -15,12 +15,13 @@
 from pathlib import Path
 import logging
 from zhm.exceptions import ZHMError
-from zhm.util.zfs import zfs_list, zfs_snapshot, zfs_clone, zfs_get, zfs_inherit, zfs_set
+from .zfs import zfs_list, zfs_snapshot, zfs_clone, zfs_get, zfs_inherit, zfs_set
+from .print import print_table
 
 log = logging.getLogger(__name__)
 
 def get_zfs_for_path(path):
-    hidden_path = Path(path.parents[0], '.' + path.name)
+    hidden_path = Path(path, '.clones')
     zfs_list_output = zfs_list(str(hidden_path), zfs_type='filesystem', properties=['name', 'mountpoint'])
     if len(zfs_list_output) == 1 and zfs_list_output[0]['mountpoint'] == hidden_path:
         zfs = zfs_list_output[0]['name']
@@ -73,17 +74,38 @@ class Manager:
             if instance['id'] == id:
                 return instance
         raise ZHMError('There is no instance with id ' + id)
-    
+
+    def unmount(self):
+        for instance in self.instances:
+            if instance != self.active:
+                zfs_set(instance['name'], mounted=False)
+        zfs_set(self.zfs, mounted=False)        
+        if self.active is not None:
+            zfs_set(self.active['name'], mounted=False)
+
+    def mount(self):
+        if not self.active:
+            raise ZHMError('There is no active instance, activate one first')
+        zfs_set(self.active['name'], mounted=True)
+        zfs_set(self.zfs, mounted=True)        
+        for instance in self.instances:
+            if instance != self.active:
+                zfs_set(instance['name'], mounted=True)
+
     def activate(self, id):
         instance = self.get_instance(id)
         if instance == self.active:
             log.warning('Instance %s already active', id)
-        else:
-            if self.active is not None:
-                zfs_inherit(self.active['name'], 'mountpoint')
-            zfs_set(instance['name'], mountpoint=self.path)
-            log.info('Activated instance ' + id)
-            self.active = instance
+            return instance
+
+        self.unmount()
+        if self.active is not None:
+            zfs_inherit(self.active['name'], 'mountpoint')
+        zfs_set(instance['name'], mountpoint=self.path)
+        self.active = instance
+        self.mount()
+
+        log.info('Activated instance ' + id)
         return instance
     
     def remove(self, id):
@@ -91,3 +113,6 @@ class Manager:
         if instance == self.active:
             raise ZHMError('Instance with id %s is active, can not remove' % id)
         raise ZHMError('NYI')         
+
+    def print(self, truncate=True):
+        print_table(self.instances, truncate=truncate)
