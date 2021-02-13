@@ -14,7 +14,6 @@
 
 import argparse
 from datetime import datetime, timezone
-from zhm.util.print import print_table
 from zhm.exceptions import ZHMError
 from zhm.api import Manager
 
@@ -35,4 +34,4 @@ class List:
 
     def __init__(self, options):
         manager = Manager(options.path)
-        print_table(manager.instances, truncate=not options.no_trunc)
+        manager.print()
