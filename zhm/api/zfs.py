@@ -149,6 +149,9 @@ def zfs_destroy(zfs_name, recursive=False, synchronous=True):
     arguments.append(zfs_name)
     return zfs('destroy', arguments)
 
+def zfs_promote(zfs_name):
+    return zfs('promote', [zfs_name])
+
 def zfs_send(last_snapshot, target_file_path, first_snapshot=None, recursive=False):
     arguments = []
     if recursive:
