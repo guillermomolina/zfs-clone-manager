@@ -133,23 +133,15 @@ class Manager:
         if instance == self.active:
             raise ZHMError('Instance with id %s is active, can not remove' % id)
         clones = self.find_clones(id)
-        promoted_list = []
+        promoted = None
         if clones:
-            is_promoted = False
-            for clone in clones:
-                if clone == self.active:
-                    is_promoted = True
-                if is_promoted:   
-                    zfs_promote(clone['name'])
-                    promoted_list.append(clone)
+            promoted = clones[-1]
+            zfs_promote(promoted['name'])
         zfs_destroy(instance['name'])
         if instance['origin']:
             zfs_destroy(instance['origin'])
-        for promoted in promoted_list:
-            if promoted == self.active:
-                pass
-            else:
-                zfs_destroy('%s@%s' % (promoted['name'],promoted['id']))
+        if promoted:
+            zfs_destroy('%s@%s' % (promoted['name'],promoted['id']))
         #self.load()
 
     def print(self, truncate=True):
