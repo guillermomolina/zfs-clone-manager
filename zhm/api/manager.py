@@ -180,6 +180,6 @@ class Manager:
                 'id': instance['id'],
                 'mountpoint': instance['mountpoint'],
                 'origin': instance['origin_id'] if instance['origin_id'] else '',
-                'date': datetime.utcfromtimestamp(instance['creation'])
+                'date': datetime.fromtimestamp(instance['creation'])
             })
         print_table(table, truncate=truncate)
