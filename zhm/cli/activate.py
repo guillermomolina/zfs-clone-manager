@@ -20,18 +20,19 @@ from zhm.api.manager import Manager
 
 log = logging.getLogger(__name__)
 
+
 class Activate:
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
         parser = parent_subparsers.add_parser('activate',
-            parents=[parent_parser],
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            description='activate an instance',
-            help='activate an instance')
-        parser.add_argument('id', 
-            help='instance id to activate')
- 
+                                              parents=[parent_parser],
+                                              formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                                              description='activate an instance',
+                                              help='activate an instance')
+        parser.add_argument('id',
+                            help='instance id to activate')
+
     def __init__(self, options):
         manager = Manager(options.path)
         instance = manager.activate(options.id)

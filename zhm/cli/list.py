@@ -17,20 +17,21 @@ from datetime import datetime, timezone
 from zhm.exceptions import ZHMError
 from zhm.api import Manager
 
+
 class List:
 
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
         parser = parent_subparsers.add_parser('ls',
-            parents=[parent_parser],
-            aliases=['list'],
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            description='List hosts',
-            help='List hosts')
+                                              parents=[parent_parser],
+                                              aliases=['list'],
+                                              formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                                              description='List hosts',
+                                              help='List hosts')
         parser.add_argument('--no-trunc',
-            help='Don\'t truncate output', 
-            action='store_true')
+                            help='Don\'t truncate output',
+                            action='store_true')
 
     def __init__(self, options):
         manager = Manager(options.path)

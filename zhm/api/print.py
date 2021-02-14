@@ -16,6 +16,7 @@ from zhm import zhm_config
 
 # TODO: use from prettytable import PrettyTable ?
 
+
 def print_table(table, truncate=True, separation=2, identation=0):
     MAX_COLUMN_LENGTH = zhm_config['max_column_length']
     if len(table) == 0:
@@ -40,7 +41,7 @@ def print_table(table, truncate=True, separation=2, identation=0):
     if truncate:
         for column in columns:
             column['length'] = min(column['length'], MAX_COLUMN_LENGTH)
-    
+
     separation_string = ' ' * separation
 
     # print headers
@@ -55,7 +56,7 @@ def print_table(table, truncate=True, separation=2, identation=0):
         for column in columns:
             value = row[column['key']]
             if truncate and len(value) > MAX_COLUMN_LENGTH:
-                value = value[:MAX_COLUMN_LENGTH-3] + '...';
+                value = value[:MAX_COLUMN_LENGTH-3] + '...'
             str_format = '{:%s}' % str(column['length'])
             strings.append(str_format.format(value))
         print(separation_string.join(strings))

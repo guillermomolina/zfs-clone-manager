@@ -57,7 +57,7 @@ class Manager:
     @staticmethod
     def initialize_zfs(zfs, path_str):
         path = Path(path_str)
-        if path.exists(): 
+        if path.exists():
             raise ZHMError('Path %s already exists, can not use it' % path_str)
         if zfs_exists(zfs):
             raise ZHMError('ZFS %s already created, can not use it' % zfs)
@@ -121,7 +121,8 @@ class Manager:
         if failed:
             # at lest one unmount failed, remount all and fail
             self.mount()
-            raise ZHMError('Failed to unmount %s, device(s) in use' % ' and'.join(failed))
+            raise ZHMError('Failed to unmount %s, device(s) in use' %
+                           ' and'.join(failed))
 
     def mount(self):
         if not self.active:

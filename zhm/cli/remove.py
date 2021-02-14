@@ -21,20 +21,21 @@ from zhm.api.manager import Manager
 
 log = logging.getLogger(__name__)
 
+
 class Remove:
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
         parser = parent_subparsers.add_parser('rm',
-            parents=[parent_parser],
-            aliases=['remove'],
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            description='Remove one or more instances',
-            help='Remove one or more instances')
+                                              parents=[parent_parser],
+                                              aliases=['remove'],
+                                              formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                                              description='Remove one or more instances',
+                                              help='Remove one or more instances')
         parser.add_argument('id',
-            nargs='+',
-            help='ID of the instance to remove')
- 
+                            nargs='+',
+                            help='ID of the instance to remove')
+
     def __init__(self, options):
         manager = Manager(options.path)
         for id in options.id:

@@ -18,6 +18,7 @@ class ZHMException(Exception):
         super().__init__()
         self.message = message
 
+
 class ZHMError(ZHMException):
     def __init__(self, message="ZFS history manager fatal error"):
         super().__init__(message)
