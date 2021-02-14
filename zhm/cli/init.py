@@ -35,4 +35,3 @@ class Init:
  
     def __init__(self, options):
         Manager.initialize_zfs(options.zfs, options.path)
-        #manager.remove(id)

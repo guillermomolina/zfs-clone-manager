@@ -28,13 +28,18 @@ from pathlib import Path
 
 log = logging.getLogger(__name__)
 
-log_levels = {
-    'debug': logging.DEBUG, 
-    'info': logging.INFO, 
-    'warn': logging.WARNING, 
-    'error': logging.ERROR, 
-    'critical': logging.CRITICAL
-}
+def set_log_level(log_level):
+    if log_level == 'none':
+        logging.disable(logging.CRITICAL)
+    else:
+        levels = {
+            'debug': logging.DEBUG, 
+            'info': logging.INFO, 
+            'warn': logging.WARNING, 
+            'error': logging.ERROR, 
+            'critical': logging.CRITICAL
+        }
+        logging.basicConfig(level=levels[log_level])
 
 class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, 
                       argparse.RawDescriptionHelpFormatter):
@@ -64,10 +69,11 @@ class CLI:
                 'info',
                 'warn',
                 'error',
-                'critical'
+                'critical',
+                'none'
             ],
             metavar='LOG_LEVEL',
-            default='info')
+            default='none')
         parser.add_argument('-D', '--debug',
             help='Enable debug mode', 
             action='store_true')
@@ -84,7 +90,7 @@ class CLI:
  
         options = parser.parse_args()
 
-        logging.basicConfig(level=log_levels[options.log_level])
+        set_log_level(options.log_level)
 
         if options.debug:
             import debugpy
