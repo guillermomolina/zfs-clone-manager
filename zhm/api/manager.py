@@ -184,3 +184,12 @@ class Manager:
                 'date': datetime.fromtimestamp(instance['creation'])
             })
         print_table(table, truncate=truncate)
+
+    def destroy(self):
+        self.unmount()
+        if zfs_destroy(self.zfs, recursive=True) != 0:
+            raise ZHMError('Could not destroy ZFS ' + self.zfs)
+        try:
+            self.path.rmdir()
+        except OSError as e:
+            raise ZHMError('Could not destroy path ' + self.path)

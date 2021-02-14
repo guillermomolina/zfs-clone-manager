@@ -11,8 +11,8 @@ $ zhm -p /directory init rpool/directory
 ZHM initialized ZFS rpool/directory at path /directory
 ```
 
--p /directory -> mountpoint of the filesystem
-rpool/directory -> root of the ZFS for clones and snapshots
+-p /directory -> mountpoint of the filesystem.
+rpool/directory -> root of the ZFS for clones and snapshots.
 
 
 - Show zhm metadata
@@ -59,3 +59,16 @@ $ cd /directory
 $ zhm rm 00000001
 ```
 
+
+- Destroy ZHM related data
+
+This is dangerous, you should backup data first.
+
+```bash
+$ zhm -p /directory destroy        
+WARNING!!!!!!!!
+All the filesystems, clones, snapshots and directories associated with /directory will be permanently deleted.
+This operation is not reversible.
+Do you want to proceed? (yes/NO) yes
+Destroyed ZHM at path /directory
+```

@@ -23,6 +23,7 @@ from zhm.cli.list import List
 from zhm.cli.create import Create
 from zhm.cli.activate import Activate
 from zhm.cli.remove import Remove
+from zhm.cli.destroy import Destroy
 from zhm.exceptions import ZHMException
 from pathlib import Path
 
@@ -54,7 +55,8 @@ class CLI:
         'ls': List,
         'create': Create,
         'activate': Activate,
-        'rm': Remove
+        'rm': Remove,
+        'destroy': Destroy
     }
 
     def __init__(self):
