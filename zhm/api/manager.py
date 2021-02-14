@@ -108,12 +108,20 @@ class Manager:
         raise ZHMError('There is no instance with id ' + id)
 
     def unmount(self):
+        failed = []
         for instance in self.instances:
             if instance != self.active:
-                zfs_set(instance['name'], mounted=False)
-        zfs_set(self.zfs, mounted=False)
+                if zfs_set(instance['name'], mounted=False) != 0:
+                    failed.append(instance['name'])
+        if zfs_set(self.zfs, mounted=False) != 0:
+            failed.append(self.zfs)
         if self.active is not None:
-            zfs_set(self.active['name'], mounted=False)
+            if zfs_set(self.active['name'], mounted=False) != 0:
+                failed.append(self.active['name'])
+        if failed:
+            # at lest one unmount failed, remount all and fail
+            self.mount()
+            raise ZHMError('Failed to unmount %s, device(s) in use' % ' and'.join(failed))
 
     def mount(self):
         if not self.active:
