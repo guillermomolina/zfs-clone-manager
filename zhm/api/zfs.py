@@ -110,20 +110,22 @@ def zfs_clone(zfs_name, snapshot, parent=None, mountpoint=None):
 
 
 def zfs_set(zfs_name, readonly=None, mountpoint=None, mounted=None):
+    result = 0
     if readonly is not None:
         option = 'readonly='
         if readonly:
             option += 'on'
         else:
             option += 'off'
-        zfs('set', [option, zfs_name])
+        result |= zfs('set', [option, zfs_name])
     if mounted is not None:
         if mounted:
-            zfs('mount', [zfs_name])
+            result |= zfs('mount', [zfs_name])
         else:
-            zfs('unmount', [zfs_name])
+            result |= zfs('unmount', [zfs_name])
     if mountpoint is not None:
-        zfs('set', ['mountpoint=' + str(mountpoint), zfs_name])
+        result |= zfs('set', ['mountpoint=' + str(mountpoint), zfs_name])
+    return result
 
 
 def zfs_inherit(zfs_name, property_name):
