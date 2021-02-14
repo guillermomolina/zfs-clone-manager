@@ -171,7 +171,7 @@ class Manager:
             zfs_destroy(instance['origin'])
         if promoted:
             zfs_destroy('%s@%s' % (promoted['name'], promoted['id']))
-        # self.load()
+        self.load()
 
     def print(self, truncate=True):
         table = []

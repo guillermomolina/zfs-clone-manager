@@ -77,7 +77,7 @@ if __name__ == "__main__":
         long_description=LONG_DESCRIPTION,
         long_description_content_type="text/markdown",
         keywords=KEYWORDS,
-        setup_requires=["pytest-runner"],
+        test_suite="tests",
         #tests_require=TESTS_REQUIRES,
         install_requires=INSTALL_REQUIRES,
         entry_points={
