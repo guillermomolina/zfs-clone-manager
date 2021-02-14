@@ -20,6 +20,7 @@ import io
 
 log = logging.getLogger(__name__)
 
+
 def get_cmd(command,  arguments, options):
     cmd = ['/usr/sbin/zfs', command]
     if options is not None:
@@ -28,17 +29,19 @@ def get_cmd(command,  arguments, options):
     if arguments is not None:
         cmd += arguments
     log.debug('Running command: "' + ' '.join(cmd) + '"')
-    return cmd    
+    return cmd
+
 
 def _zfs(command,  arguments=None, options=None, stdout=None):
     cmd = get_cmd(command, arguments, options)
     return subprocess.Popen(cmd, stdout=stdout)
 
+
 def zfs(command,  arguments=None, options=None):
     cmd = get_cmd(command, arguments, options)
     process = subprocess.run(cmd, capture_output=True, text=True)
     #import debugpy
-    #debugpy.breakpoint()
+    # debugpy.breakpoint()
     if process.stdout:
         for line in iter(process.stdout.splitlines()):
             log.info(line)
@@ -50,13 +53,31 @@ def zfs(command,  arguments=None, options=None):
                 log.error(line)
     return process.returncode
 
-def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None):
+
+def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursive=False):
     filesystem = zfs_name
-    if parent is not None:
-        filesystem = parent + '/' + zfs_name
+    if parent is None:
+        last_index = zfs_name.rfind('/')
+        parent = filesystem[:last_index]
+        zfs_name = filesystem[last_index+1:]
+    else:
+        filesystem = '%s/%s' % (parent, zfs_name)
+
+    if recursive:
+        zfs_path = ''
+        is_zpool = True
+        for zfs_fs in parent.split('/'):
+            zfs_path += '/' if zfs_path else ''
+            zfs_path += zfs_fs
+            if not zfs_is_filesystem(zfs_path):
+                if is_zpool:
+                    return None
+                if zfs('create', [zfs_path], ['mountpoint=none']) != 0:
+                    return None
+            is_zpool = False
 
     # Just debugging, don't fail if already created
-    #if(destroy(filesystem, recursive=True) == 0):
+    # if(destroy(filesystem, recursive=True) == 0):
     #    print('WARNING: Deleting filesystem (%s) ' % filesystem)
 
     options = []
@@ -70,13 +91,14 @@ def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None):
         return filesystem
     return None
 
+
 def zfs_clone(zfs_name, snapshot, parent=None, mountpoint=None):
     filesystem = zfs_name
     if parent is not None:
         filesystem = parent + '/' + zfs_name
 
     # Just debugging, don't fail if already created
-    #if(destroy(filesystem, recursive=True) == 0):
+    # if(destroy(filesystem, recursive=True) == 0):
     #    print('WARNING: Deleting filesystem (%s) ' % filesystem)
 
     options = None
@@ -85,6 +107,7 @@ def zfs_clone(zfs_name, snapshot, parent=None, mountpoint=None):
     if zfs('clone', [snapshot, filesystem], options) == 0:
         return filesystem
     return None
+
 
 def zfs_set(zfs_name, readonly=None, mountpoint=None, mounted=None):
     if readonly is not None:
@@ -102,8 +125,10 @@ def zfs_set(zfs_name, readonly=None, mountpoint=None, mounted=None):
     if mountpoint is not None:
         zfs('set', ['mountpoint=' + str(mountpoint), zfs_name])
 
+
 def zfs_inherit(zfs_name, property_name):
     zfs('inherit', [property_name, zfs_name])
+
 
 def value_convert(property_name, value):
     if value == 'on':
@@ -114,10 +139,11 @@ def value_convert(property_name, value):
         return None
     if property_name == 'mountpoint':
         return pathlib.Path(value)
-    try: 
+    try:
         return int(value)
     except ValueError:
         return value
+
 
 def zfs_get(zfs_name, property_name):
     if property_name == 'all':
@@ -130,6 +156,7 @@ def zfs_get(zfs_name, property_name):
         return value_convert(property_name, value)
     return None
 
+
 def zfs_snapshot(zfs_name, filesystem, recursive=False):
     arguments = []
     if recursive:
@@ -140,6 +167,7 @@ def zfs_snapshot(zfs_name, filesystem, recursive=False):
         return snapshot
     return None
 
+
 def zfs_destroy(zfs_name, recursive=False, synchronous=True):
     arguments = []
     if recursive:
@@ -149,8 +177,10 @@ def zfs_destroy(zfs_name, recursive=False, synchronous=True):
     arguments.append(zfs_name)
     return zfs('destroy', arguments)
 
+
 def zfs_promote(zfs_name):
     return zfs('promote', [zfs_name])
+
 
 def zfs_send(last_snapshot, target_file_path, first_snapshot=None, recursive=False):
     arguments = []
@@ -159,16 +189,17 @@ def zfs_send(last_snapshot, target_file_path, first_snapshot=None, recursive=Fal
     if first_snapshot is not None:
         arguments += ['-I', first_snapshot]
     arguments.append(last_snapshot)
-    with open(target_file_path,'wb') as target_file:
+    with open(target_file_path, 'wb') as target_file:
         return _zfs('send', arguments, stdout=target_file)
 
-def zfs_list(zfs_name=None, zfs_type=None, recursive=False,\
-        properties=['name', 'used', 'avail', 'refer', 'mountpoint']):
+
+def zfs_list(zfs_name=None, zfs_type=None, recursive=False,
+             properties=['name', 'used', 'avail', 'refer', 'mountpoint']):
     cmd = ['/usr/sbin/zfs', 'list', '-Hp']
     if recursive:
-        cmd.append('-r')   
-    if zfs_type is not None and zfs_type in ['all', 'filesystem', 
-            'snapshot', 'volume']:
+        cmd.append('-r')
+    if zfs_type is not None and zfs_type in ['all', 'filesystem',
+                                             'snapshot', 'volume']:
         cmd += ['-t', zfs_type]
     if properties is not None:
         cmd += ['-o', ','.join(properties)]
@@ -183,15 +214,18 @@ def zfs_list(zfs_name=None, zfs_type=None, recursive=False,\
                 values = line.split('\t')
                 filesystem = {}
                 for property_name, value in zip(properties, values):
-                    filesystem[property_name] = value_convert(property_name, value)
+                    filesystem[property_name] = value_convert(
+                        property_name, value)
                 filesystems.append(filesystem)
             return filesystems
     except:
         return []
 
+
 def zfs_exists(zfs_name):
     filesystems = zfs_list(zfs_name, zfs_type='all', properties=['name'])
     return len(filesystems) == 1
+
 
 def zfs_is_filesystem(zfs_name):
     try:
@@ -199,11 +233,13 @@ def zfs_is_filesystem(zfs_name):
     except:
         return False
 
+
 def zfs_is_snapshot(zfs_name):
     try:
         return zfs_get(zfs_name, 'type') == 'snapshot'
     except:
         return False
+
 
 def zfs_diff(final_snapshot, origin_snapshot=None, include_file_types=False, recursive=False):
     # Implemented as generator, in case it is too big
@@ -238,6 +274,7 @@ def zfs_diff(final_snapshot, origin_snapshot=None, include_file_types=False, rec
     for line in io.TextIOWrapper(process.stdout, encoding="utf-8"):
         records = line.strip().split('\t')
         yield records
+
 
 def zfs_rename(original_zfs_name, new_zfs_name):
     arguments = [original_zfs_name, new_zfs_name]
