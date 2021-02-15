@@ -13,18 +13,19 @@ The suggested workflow is:
 
 ## Usage
 
-- Initialize zhm metadata
+- Initialize ZHM
 
 ```bash
 $ zhm -p /directory init rpool/directory
 ZHM initialized ZFS rpool/directory at path /directory
 ```
 
--p /directory -> mountpoint of the filesystem.
-rpool/directory -> root of the ZFS for clones and snapshots.
+"-p /directory" -> path of the filesystem (mountpoint of the active clone).
+
+"rpool/directory" -> root of the ZFS for clones and snapshots.
 
 
-- Show zhm metadata
+- Show ZHM information
 
 ```bash
 $ cd /directory
@@ -43,16 +44,16 @@ $ zhm clone
 Created instance 00000002 at path /directory/.clones/00000002
 ```
 
-- Start using the previously created clone
+- Activate the previously created clone, mounting it at ZHM path 
 
 ```bash
 $ zhm -p /directory activate 00000002
 Activated instance 00000002
 ```
 
-The activate command can not be executed inside the mountpoint, therefore the parameter -p <mounpoint> is mandatory.  
+The activate command can not be executed from inside the path, therefore the parameter -p <path> is mandatory.  
 
-- All the clones are visible at <mountpoint>/.clones
+- All the clones are visible at <path>/.clones
 
 ```bash
 $ cd /directory
