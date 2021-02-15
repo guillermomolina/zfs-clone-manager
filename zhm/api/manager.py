@@ -48,9 +48,9 @@ def snapshot_to_origin_id(snapshot):
 class Manager:
     def __init__(self, path):
         self.path = Path(path)
+        self.zfs = None
         self.instances = []
         self.active = None
-        self.zfs = None
         self.next_id = None
         self.load()
 
@@ -68,7 +68,9 @@ class Manager:
         log.info('Created ZHM %s at path %s' % (zfs, path_str))
 
     def load(self):
+        self.instances = []
         self.active = None
+        self.next_id = None
         if self.path.is_dir():
             self.zfs = get_zfs_for_path(self.path)
             last_id = 0
@@ -97,6 +99,7 @@ class Manager:
         }
         self.instances.append(instance)
         log.info('Created instance ' + instance['id'])
+        self.load()
         return instance
 
     def get_instance(self, id):
@@ -145,6 +148,7 @@ class Manager:
         self.mount()
 
         log.info('Activated instance ' + id)
+        self.load()
         return instance
 
     def find_clones(self, id):
