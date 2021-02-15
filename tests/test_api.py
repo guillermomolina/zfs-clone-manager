@@ -79,7 +79,7 @@ class TestAPI(unittest.TestCase):
         except ZHMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZHMError as e:
             self.fail('Creation should not raise exceptions')
 
@@ -130,7 +130,7 @@ class TestAPI(unittest.TestCase):
         except ZHMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZHMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -187,7 +187,7 @@ class TestAPI(unittest.TestCase):
         except ZHMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZHMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -234,7 +234,7 @@ class TestAPI(unittest.TestCase):
         except ZHMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZHMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -285,11 +285,11 @@ class TestAPI(unittest.TestCase):
         except ZHMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZHMError as e:
             self.fail('Creation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZHMError as e:
             self.fail('Creation should not raise exceptions')
 
@@ -354,11 +354,11 @@ class TestAPI(unittest.TestCase):
         except ZHMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZHMError as e:
             self.fail('Creation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZHMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -429,11 +429,11 @@ class TestAPI(unittest.TestCase):
         except ZHMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZHMError as e:
             self.fail('Creation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZHMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -498,11 +498,11 @@ class TestAPI(unittest.TestCase):
         except ZHMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZHMError as e:
             self.fail('Creation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZHMError as e:
             self.fail('Creation should not raise exceptions')
         try:

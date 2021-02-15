@@ -20,7 +20,7 @@ from zhm import __version__
 from zhm import zhm_config
 from zhm.cli.initialize import Initialize
 from zhm.cli.list import List
-from zhm.cli.create import Create
+from zhm.cli.clone import Clone
 from zhm.cli.activate import Activate
 from zhm.cli.remove import Remove
 from zhm.cli.destroy import Destroy
@@ -53,7 +53,7 @@ class CLI:
     commands = {
         'init': Initialize,
         'ls': List,
-        'create': Create,
+        'clone': Clone,
         'activate': Activate,
         'rm': Remove,
         'destroy': Destroy

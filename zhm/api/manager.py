@@ -63,7 +63,7 @@ class Manager:
             raise ZHMError('ZFS %s already created, can not use it' % zfs)
         instance = zfs_create('00000000', zfs, mountpoint=path, recursive=True)
         if instance is None:
-            raise ZHMError('Could not create ZFS %s at %s' % (zfs, path_str))
+            raise ZHMError('Could not clone ZFS %s at %s' % (zfs, path_str))
         zfs_set(zfs, mountpoint=Path(path, '.clones'))
         log.info('Created ZHM %s at path %s' % (zfs, path_str))
 
@@ -86,7 +86,7 @@ class Manager:
                     self.instances.append(zfs)
             self.next_id = format(last_id + 1, '08x')
 
-    def create(self):
+    def clone(self):
         if not self.active:
             raise ZHMError('There is no active instance, activate one first')
         snapshot = zfs_snapshot(self.next_id, self.active['name'])

@@ -1,6 +1,15 @@
 # ZFS History Manager
 
-Tool to manage ZFS with history metadata. The functionality is similar to Solaris beadm but generalized for any ZFS, not just ROOT and VAR.
+Tool to add version control and historic data of a directory with ZFS. The functionality is similar to Solaris beadm but generalized for any ZFS filesystem, not just ROOT and VAR.
+
+The suggested workflow is:
+1. Initialize (zhm init)
+2. Make changes in active
+3. Clone (zhm clone)
+4. Make changes in clone
+5. Activate clone (zhm activate)
+6. [Remove older clones (zhm rm)]
+7. Go to step 2
 
 ## Usage
 
@@ -28,9 +37,9 @@ A  ID        MOUNTPOINT  ORIGIN  DATE
 
 ```bash
 $ cd /directory
-$ zhm create
+$ zhm clone
 Created instance 00000001 at path /directory/.clones/00000001
-$ zhm create
+$ zhm clone
 Created instance 00000002 at path /directory/.clones/00000002
 ```
 
