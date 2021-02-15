@@ -78,9 +78,8 @@ class Manager:
                 if zfs['name'] != self.zfs:
                     zfs['id'] = zfs['name'].split('/')[-1]
                     last_id = max(last_id, int(zfs['id'], base=16))
-                    zfs['active'] = zfs['mountpoint'] == self.path
                     zfs['origin_id'] = snapshot_to_origin_id(zfs['origin'])
-                    if zfs['active']:
+                    if zfs['mountpoint'] == self.path:
                         self.active = zfs
                     self.instances.append(zfs)
             self.next_id = format(last_id + 1, '08x')
@@ -94,8 +93,7 @@ class Manager:
             'id': self.next_id,
             'name': zfs,
             'origin': snapshot,
-            'mountpoint': zfs_get(zfs, 'mountpoint'),
-            'active': False
+            'mountpoint': zfs_get(zfs, 'mountpoint')
         }
         self.instances.append(instance)
         log.info('Created instance ' + instance['id'])
@@ -177,7 +175,7 @@ class Manager:
         table = []
         for instance in self.instances:
             table.append({
-                'a': '*' if instance['active'] else ' ',
+                'a': '*' if self.active == instance else ' ',
                 'id': instance['id'],
                 'mountpoint': instance['mountpoint'],
                 'origin': instance['origin_id'] if instance['origin_id'] else '',
