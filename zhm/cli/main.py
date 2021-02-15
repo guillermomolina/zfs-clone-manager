@@ -62,7 +62,7 @@ class CLI:
     def __init__(self):
         parser = argparse.ArgumentParser(
             formatter_class=CustomFormatter,
-            description='A self-sufficient history for containers')
+            description='A self-sufficient history for ZFS')
         parser.add_argument('-V', '--version',
                             help='Print version information and quit',
                             action='version',
