@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pathlib import Path
 import logging
-from zhm.exceptions import ZHMError
-from .zfs import zfs_list, zfs_snapshot, zfs_clone, zfs_get, zfs_inherit, \
-    zfs_set, zfs_promote, zfs_destroy, zfs_rename, zfs_is_filesystem, \
-    zfs_create, zfs_exists
-from .print import print_table
 from datetime import datetime
+from pathlib import Path
+
+from zhm.exceptions import ZHMError
+
+from .print import print_table
+from .zfs import (zfs_clone, zfs_create, zfs_destroy, zfs_exists, zfs_get,
+                  zfs_inherit, zfs_is_filesystem, zfs_list, zfs_promote,
+                  zfs_rename, zfs_set, zfs_snapshot)
 
 log = logging.getLogger(__name__)
 
@@ -75,9 +77,11 @@ class Manager:
             self.zfs = get_zfs_for_path(self.path)
             last_id = 0
             zfs_list_output = zfs_list(self.zfs, zfs_type='filesystem', properties=[
-                                       'name', 'origin', 'mountpoint', 'creation'], recursive=True)
+                                       'name', 'origin', 'mountpoint', 'creation', 'used'], recursive=True)
             for zfs in zfs_list_output:
-                if zfs['name'] != self.zfs:
+                if zfs['name'] == self.zfs:
+                    self.used = zfs['used']
+                else:
                     zfs['id'] = zfs['name'].split('/')[-1]
                     last_id = max(last_id, int(zfs['id'], base=16))
                     zfs['origin_id'] = snapshot_to_origin_id(zfs['origin'])

@@ -3,6 +3,7 @@
 ## 2021-02-15: Version 1.1.0
 
 - Added quiet mode
+- Added info command
 
 
 ## 2021-02-15: Version 1.0.0

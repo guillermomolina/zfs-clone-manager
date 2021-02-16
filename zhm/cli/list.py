@@ -13,8 +13,6 @@
 # limitations under the License.
 
 import argparse
-from datetime import datetime, timezone
-from zhm.exceptions import ZHMError
 from zhm.api import Manager
 
 

@@ -14,20 +14,19 @@
 
 
 import argparse
-import logging
-from zhm import ZHMError
+
 from zhm.api.manager import Manager
 
-log = logging.getLogger(__name__)
 
 def are_you_sure(force, path):
-    if force: 
+    if force:
         return True
     print('WARNING!!!!!!!!')
     print('All the filesystems, clones, snapshots and directories associated with %s will be permanently deleted.' % path)
     print('This operation is not reversible.')
     answer = input('Do you want to proceed? (yes/NO) ')
     return answer == 'yes'
+
 
 class Destroy:
     @staticmethod
@@ -47,4 +46,4 @@ class Destroy:
         if are_you_sure(options.force, options.path):
             manager.destroy()
             if not options.quiet:
-                    print('Destroyed ZHM at path %s' % options.path)
+                print('Destroyed ZHM at path %s' % options.path)

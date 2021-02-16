@@ -14,12 +14,8 @@
 
 
 import argparse
-import logging
-from zhm import ZHMError
-from zhm.exceptions import ZHMException
-from zhm.api.manager import Manager
 
-log = logging.getLogger(__name__)
+from zhm.api.manager import Manager
 
 
 class Initialize:
@@ -39,4 +35,4 @@ class Initialize:
         Manager.initialize_zfs(options.zfs, options.path)
         if not options.quiet:
             print('ZHM initialized ZFS %s at path %s' %
-              (options.zfs, options.path))
+                  (options.zfs, options.path))

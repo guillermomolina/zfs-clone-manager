@@ -14,11 +14,9 @@
 
 
 import argparse
-import logging
-from zhm import ZHMError
+
 from zhm.api.manager import Manager
 
-log = logging.getLogger(__name__)
 
 class Clone:
     @staticmethod

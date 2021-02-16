@@ -14,11 +14,8 @@
 
 
 import argparse
-import logging
-from zhm import ZHMError
-from zhm.api.manager import Manager
 
-log = logging.getLogger(__name__)
+from zhm.api.manager import Manager
 
 
 class Activate:

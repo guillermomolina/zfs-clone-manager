@@ -60,3 +60,8 @@ def print_table(table, truncate=True, separation=2, identation=0):
             str_format = '{:%s}' % str(column['length'])
             strings.append(str_format.format(value))
         print(separation_string.join(strings))
+
+
+def print_info(data):
+    for key, value in data.items():
+        print('%s: %s' % (key, value))
