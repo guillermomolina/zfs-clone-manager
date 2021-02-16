@@ -62,6 +62,17 @@ def print_table(table, truncate=True, separation=2, identation=0):
         print(separation_string.join(strings))
 
 
+def format_bytes(size):
+    # 2**10 = 1024
+    power = 2**10
+    n = 0
+    power_labels = {0: 'B', 1: 'KB', 2: 'MB', 3: 'GB', 4: 'TB', 5: 'PB'}
+    while size > power:
+        size /= power
+        n += 1
+    return '{:.2f} {:s}'.format(size, power_labels[n])
+
+
 def print_info(data):
     for key, value in data.items():
         print('%s: %s' % (key, value))

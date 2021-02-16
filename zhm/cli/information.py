@@ -15,7 +15,7 @@
 import argparse
 
 from zhm.api import Manager
-from zhm.api.print import print_info
+from zhm.api.print import format_bytes, print_info
 
 
 class Information:
@@ -38,7 +38,7 @@ class Information:
         data = {
             'Path': manager.path,
             'Root ZFS': manager.zfs,
-            'Used bytes': manager.used,
+            'Root ZFS size': format_bytes(manager.used),
             'Clone count': len(manager.instances),
             'Oldest clone ID': manager.instances[0]['id'],
             'Active clone ID': manager.active['id'],

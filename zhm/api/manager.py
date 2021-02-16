@@ -16,6 +16,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
+from zhm.api.print import format_bytes
 from zhm.exceptions import ZHMError
 
 from .print import print_table
@@ -187,7 +188,8 @@ class Manager:
                 'id': instance['id'],
                 'mountpoint': instance['mountpoint'],
                 'origin': instance['origin_id'] if instance['origin_id'] else '',
-                'date': datetime.fromtimestamp(instance['creation'])
+                'date': datetime.fromtimestamp(instance['creation']),
+                'size': format_bytes(instance['used'])
             })
         print_table(table, truncate=truncate)
 
