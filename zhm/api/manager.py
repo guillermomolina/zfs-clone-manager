@@ -64,8 +64,8 @@ class Manager:
             raise ZHMError('Path %s already exists, can not use it' % path_str)
         if zfs_exists(zfs):
             raise ZHMError('ZFS %s already created, can not use it' % zfs)
-        instance = zfs_create('00000000', zfs, mountpoint=path, recursive=True)
-        if instance is None:
+        clone = zfs_create('00000000', zfs, mountpoint=path, recursive=True)
+        if clone is None:
             raise ZHMError('Could not clone ZFS %s at %s' % (zfs, path_str))
         zfs_set(zfs, mountpoint=Path(path, '.clones'))
         log.info('Created ZHM %s at path %s' % (zfs, path_str))
@@ -93,32 +93,32 @@ class Manager:
 
     def clone(self):
         if not self.active:
-            raise ZHMError('There is no active instance, activate one first')
+            raise ZHMError('There is no active clone, activate one first')
         snapshot = zfs_snapshot(self.next_id, self.active['name'])
         zfs = zfs_clone(self.zfs + '/' + self.next_id, snapshot)
-        instance = {
+        clone = {
             'id': self.next_id,
             'name': zfs,
             'origin': snapshot,
             'mountpoint': zfs_get(zfs, 'mountpoint')
         }
-        self.instances.append(instance)
-        log.info('Created instance ' + instance['id'])
+        self.instances.append(clone)
+        log.info('Created clone ' + clone['id'])
         self.load()
-        return instance
+        return clone
 
     def get_instance(self, id):
-        for instance in self.instances:
-            if instance['id'] == id:
-                return instance
-        raise ZHMError('There is no instance with id ' + id)
+        for clone in self.instances:
+            if clone['id'] == id:
+                return clone
+        raise ZHMError('There is no clone with id ' + id)
 
     def unmount(self):
         failed = []
-        for instance in self.instances:
-            if instance != self.active:
-                if zfs_set(instance['name'], mounted=False) != 0:
-                    failed.append(instance['name'])
+        for clone in self.instances:
+            if clone != self.active:
+                if zfs_set(clone['name'], mounted=False) != 0:
+                    failed.append(clone['name'])
         if zfs_set(self.zfs, mounted=False) != 0:
             failed.append(self.zfs)
         if self.active is not None:
@@ -132,64 +132,64 @@ class Manager:
 
     def mount(self):
         if not self.active:
-            raise ZHMError('There is no active instance, activate one first')
+            raise ZHMError('There is no active clone, activate one first')
         zfs_set(self.active['name'], mounted=True)
         zfs_set(self.zfs, mounted=True)
-        for instance in self.instances:
-            if instance != self.active:
-                zfs_set(instance['name'], mounted=True)
+        for clone in self.instances:
+            if clone != self.active:
+                zfs_set(clone['name'], mounted=True)
 
     def activate(self, id):
-        instance = self.get_instance(id)
-        if instance == self.active:
-            log.warning('Instance %s already active', id)
-            return instance
+        clone = self.get_instance(id)
+        if clone == self.active:
+            log.warning('Clone %s already active', id)
+            return clone
 
         self.unmount()
         if self.active is not None:
             zfs_inherit(self.active['name'], 'mountpoint')
-        zfs_set(instance['name'], mountpoint=self.path)
-        self.active = instance
+        zfs_set(clone['name'], mountpoint=self.path)
+        self.active = clone
         self.mount()
 
-        log.info('Activated instance ' + id)
+        log.info('Activated clone ' + id)
         self.load()
-        return instance
+        return clone
 
     def find_clones(self, id):
         clones = []
-        for instance in self.instances:
-            if instance['origin_id'] == id:
-                clones.append(instance)
+        for clone in self.instances:
+            if clone['origin_id'] == id:
+                clones.append(clone)
         return clones
 
     def remove(self, id):
-        instance = self.get_instance(id)
-        if instance == self.active:
+        clone = self.get_instance(id)
+        if clone == self.active:
             raise ZHMError(
-                'Instance with id %s is active, can not remove' % id)
+                'Clone with id %s is active, can not remove' % id)
         clones = self.find_clones(id)
         promoted = None
         if clones:
             promoted = clones[-1]
             zfs_promote(promoted['name'])
-        zfs_destroy(instance['name'])
-        if instance['origin']:
-            zfs_destroy(instance['origin'])
+        zfs_destroy(clone['name'])
+        if clone['origin']:
+            zfs_destroy(clone['origin'])
         if promoted:
             zfs_destroy('%s@%s' % (promoted['name'], promoted['id']))
         self.load()
 
     def print(self, truncate=True):
         table = []
-        for instance in self.instances:
+        for clone in self.instances:
             table.append({
-                'a': '*' if self.active == instance else ' ',
-                'id': instance['id'],
-                'mountpoint': instance['mountpoint'],
-                'origin': instance['origin_id'] if instance['origin_id'] else '',
-                'date': datetime.fromtimestamp(instance['creation']),
-                'size': format_bytes(instance['used'])
+                'a': '*' if self.active == clone else ' ',
+                'id': clone['id'],
+                'mountpoint': clone['mountpoint'],
+                'origin': clone['origin_id'] if clone['origin_id'] else '',
+                'date': datetime.fromtimestamp(clone['creation']),
+                'size': format_bytes(clone['used'])
             })
         print_table(table, truncate=truncate)
 

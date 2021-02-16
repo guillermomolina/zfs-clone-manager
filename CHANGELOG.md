@@ -4,6 +4,8 @@
 
 - Added quiet mode
 - Added info command
+- Added zfs size info
+- Renamed Manager.instances to Manager.clones
 
 
 ## 2021-02-15: Version 1.0.0

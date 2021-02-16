@@ -39,16 +39,16 @@ A  ID        MOUNTPOINT  ORIGIN  DATE
 ```bash
 $ cd /directory
 $ zhm clone
-Created instance 00000001 at path /directory/.clones/00000001
+Created clone 00000001 at path /directory/.clones/00000001
 $ zhm clone
-Created instance 00000002 at path /directory/.clones/00000002
+Created clone 00000002 at path /directory/.clones/00000002
 ```
 
 - Activate the previously created clone, mounting it at ZHM path 
 
 ```bash
 $ zhm -p /directory activate 00000002
-Activated instance 00000002
+Activated clone 00000002
 ```
 
 The activate command can not be executed from inside the path, therefore the parameter -p <path> is mandatory.  

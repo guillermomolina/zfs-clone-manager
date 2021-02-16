@@ -30,11 +30,11 @@ class Remove:
                                               help='Remove one or more instances')
         parser.add_argument('id',
                             nargs='+',
-                            help='ID of the instance to remove')
+                            help='ID of the clone to remove')
 
     def __init__(self, options):
         manager = Manager(options.path)
         for id in options.id:
             manager.remove(id)
             if not options.quiet:
-                print('Removed instance ' + id)
+                print('Removed clone ' + id)

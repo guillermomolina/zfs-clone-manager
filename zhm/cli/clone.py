@@ -25,11 +25,11 @@ class Clone:
         parser = parent_subparsers.add_parser('clone',
             parents=[parent_parser],
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            description='Clone a new instance',
-            help='Clone a new instance')
+            description='Clone a new clone',
+            help='Clone a new clone')
  
     def __init__(self, options):
         manager = Manager(options.path)
-        instance = manager.clone()
+        clone = manager.clone()
         if not options.quiet:
-            print('Created instance %s at path %s' % (instance['id'], instance['mountpoint']))
+            print('Created clone %s at path %s' % (clone['id'], clone['mountpoint']))

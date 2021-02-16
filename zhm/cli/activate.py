@@ -25,13 +25,13 @@ class Activate:
         parser = parent_subparsers.add_parser('activate',
                                               parents=[parent_parser],
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='activate an instance',
-                                              help='activate an instance')
+                                              description='activate an clone',
+                                              help='activate an clone')
         parser.add_argument('id',
-                            help='instance id to activate')
+                            help='clone id to activate')
 
     def __init__(self, options):
         manager = Manager(options.path)
-        instance = manager.activate(options.id)
+        clone = manager.activate(options.id)
         if not options.quiet:
-            print('Activated instance ' + instance['id'])
+            print('Activated clone ' + clone['id'])
