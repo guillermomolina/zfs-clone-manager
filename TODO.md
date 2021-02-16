@@ -1,6 +1,5 @@
 # Todo list for ZFS Clone Manager
 
-- Cap max number of clones
 - Autoremove clones
 
 $ zcm clone --max-newer 2 --auto-remove

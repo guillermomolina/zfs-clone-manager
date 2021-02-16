@@ -142,6 +142,8 @@ class TestAPI(unittest.TestCase):
             manager.activate('00000001')
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
+        with self.assertRaises(ZCMException):
+            manager.activate('00000001')
         with self.assertRaises(ZCMError):
             manager.remove('00000001')
 
@@ -378,6 +380,8 @@ class TestAPI(unittest.TestCase):
             manager.activate('00000001')
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
+        with self.assertRaises(ZCMException):
+            manager.activate('00000001')
         with self.assertRaises(ZCMError):
             manager.remove('00000001')
 
@@ -579,7 +583,6 @@ class TestAPI(unittest.TestCase):
         self.assertTrue(zfs_get(filesystem, 'mounted'))
         self.assertTrue(path.is_dir())
 
-
     def test_clone_options(self):
         manager = None
         try:
@@ -605,6 +608,35 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.next_id, '00000006')
         self.assertEqual(len(manager.older_clones), 0)
         self.assertEqual(len(manager.newer_clones), 5)
+
+    def test_active_options(self):
+        manager = None
+        try:
+            manager = Manager(directory)
+        except ZCMError as e:
+            self.fail('Instantiation should not raise exceptions')
+        try:
+            manager.clone()
+            manager.clone()
+            manager.clone()
+            manager.clone()
+        except ZCMError as e:
+            self.fail('Creation should not raise exceptions')
+        with self.assertRaises(ZCMException):
+            manager.activate('00000002', max_newer=1)
+        with self.assertRaises(ZCMException):
+            manager.activate('00000002', max_older=1)
+        try:
+            manager.activate('00000002', max_older=2, max_newer=2)
+        except ZCMError as e:
+            self.fail('Creation should not raise exceptions')
+
+        self.assertEqual(manager.path, Path(directory))
+        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.active, manager.clones[2])
+        self.assertEqual(manager.next_id, '00000005')
+        self.assertEqual(len(manager.older_clones), 2)
+        self.assertEqual(len(manager.newer_clones), 2)
 
 
 if __name__ == '__main__':

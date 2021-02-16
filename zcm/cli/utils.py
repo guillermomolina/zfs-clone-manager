@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__version__ = "2.1.0-dev"
-AUTHOR = "Guillermo Adrián Molina"
-AUTHOR_EMAIL = "guillermoadrianmolina@hotmail.com"
-NAME = "zfs-clone-manager"
-PACKAGE_URL = "http://www.github.com/guillermomolina/zfs-clone-manager"
-KEYWORDS = "zfs"
-DESCRIPTION = "Tools to manage ZFS clones with history metadata"
-LICENSE = "LICENSE"
+import argparse
+
+
+def check_positive(value):
+    ivalue = int(value)
+    if ivalue < 0:
+        raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
+    return ivalue
+

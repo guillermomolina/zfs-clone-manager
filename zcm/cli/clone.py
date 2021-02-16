@@ -17,12 +17,8 @@ import argparse
 
 from zcm.api.manager import Manager
 
+from .utils import check_positive
 
-def check_positive(value):
-    ivalue = int(value)
-    if ivalue <= 0:
-        raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
-    return ivalue
 
 class Clone:
     @staticmethod

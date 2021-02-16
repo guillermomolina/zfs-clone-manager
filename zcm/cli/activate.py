@@ -17,6 +17,8 @@ import argparse
 
 from zcm.api.manager import Manager
 
+from .utils import check_positive
+
 
 class Activate:
     @staticmethod
@@ -27,11 +29,17 @@ class Activate:
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='activate an clone',
                                               help='activate an clone')
+        parser.add_argument('-m', '--max-newer',
+                            type=check_positive,
+                            help='Do not activate if there will be more than <max-newer> newer clones')
+        parser.add_argument('-M', '--max-older',
+                            type=check_positive,
+                            help='Do not activate if there will be more than <max-older> older clones')
         parser.add_argument('id',
                             help='clone id to activate')
 
     def __init__(self, options):
         manager = Manager(options.path)
-        clone = manager.activate(options.id)
+        clone = manager.activate(options.id, options.max_newer, options.max_older)
         if not options.quiet:
             print('Activated clone ' + clone['id'])

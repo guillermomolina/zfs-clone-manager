@@ -154,22 +154,41 @@ class Manager:
             if clone != self.active:
                 zfs_set(clone['name'], mounted=True)
 
-    def activate(self, id):
-        clone = self.get_instance(id)
-        if clone == self.active:
-            log.warning('Clone %s already active', id)
-            return clone
+    def activate(self, id, max_newer=None, max_older=None):
+        active = self.get_instance(id)
+        if active == self.active:
+            raise ZCMException('Clone %s already active' % id)
+        if max_newer is not None or max_older is not None:
+            newer_count = 0
+            older_count = 0
+            has_reach_active = False
+            for clone in self.clones:
+                if clone == active:
+                    has_reach_active = True
+                else:
+                    if has_reach_active:
+                        newer_count += 1
+                    else:
+                        older_count += 1
+            if max_newer is not None and newer_count > max_newer:
+                raise ZCMException(
+                    'Command denied, Activating %s violates the maximum number of newer clones (%d/%d)'
+                    % (id, newer_count, max_newer))
+            if max_older is not None and older_count > max_older:
+                raise ZCMException(
+                    'Command denied, Activating %s violates the maximum number of older clones (%d/%d)'
+                    % (id, older_count, max_older))
 
         self.unmount()
         if self.active is not None:
             zfs_inherit(self.active['name'], 'mountpoint')
-        zfs_set(clone['name'], mountpoint=self.path)
-        self.active = clone
+        zfs_set(active['name'], mountpoint=self.path)
+        self.active = active
         self.mount()
 
         log.info('Activated clone ' + id)
         self.load()
-        return clone
+        return active
 
     def find_clones(self, id):
         clones = []
