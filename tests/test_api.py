@@ -16,8 +16,8 @@ import unittest
 from pathlib import Path
 
 from zcm.api.manager import Manager
-from zcm.api.zfs import zfs_exists, zfs_get, zfs_is_filesystem, zfs_is_snapshot
 from zcm.exceptions import ZCMError, ZCMException
+from zcm.lib.zfs import zfs_exists, zfs_get, zfs_is_filesystem, zfs_is_snapshot
 
 zfs = 'rpool/my/cool/zfs/directory'
 directory = '/my_cool_zfs_directory'
