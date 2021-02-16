@@ -15,7 +15,7 @@
 import argparse
 
 from zcm.api import Manager
-from zcm.api.print import format_bytes, print_info
+from zcm.lib.print import format_bytes, print_info
 
 
 class Information:

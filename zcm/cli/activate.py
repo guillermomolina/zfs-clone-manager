@@ -16,8 +16,7 @@
 import argparse
 
 from zcm.api.manager import Manager
-
-from .utils import check_positive
+from zcm.lib.helpers import check_one_or_more, check_positive
 
 
 class Activate:
@@ -35,11 +34,18 @@ class Activate:
         parser.add_argument('-M', '--max-older',
                             type=check_positive,
                             help='Do not activate if there will be more than <max-older> older clones')
+        parser.add_argument('-t', '--max-total',
+                            type=check_one_or_more,
+                            help='Do not clone if there are <max-total> clones')
+        parser.add_argument('-a', '--auto-remove',
+                            action='store_true',
+                            help='Remove clones if maximum limits excedeed')
         parser.add_argument('id',
                             help='clone id to activate')
 
     def __init__(self, options):
         manager = Manager(options.path)
-        clone = manager.activate(options.id, options.max_newer, options.max_older)
+        clone = manager.activate(options.id, options.max_newer,
+                                 options.max_older, options.max_total, options.auto_remove)
         if not options.quiet:
             print('Activated clone ' + clone['id'])

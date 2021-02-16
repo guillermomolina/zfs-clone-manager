@@ -16,13 +16,11 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from zcm.api.print import format_bytes
 from zcm.exceptions import ZCMError, ZCMException
-
-from .print import print_table
-from .zfs import (zfs_clone, zfs_create, zfs_destroy, zfs_exists, zfs_get,
-                  zfs_inherit, zfs_is_filesystem, zfs_list, zfs_promote,
-                  zfs_rename, zfs_set, zfs_snapshot)
+from zcm.lib.print import format_bytes, print_table
+from zcm.lib.zfs import (zfs_clone, zfs_create, zfs_destroy, zfs_exists,
+                         zfs_get, zfs_inherit, zfs_is_filesystem, zfs_list,
+                         zfs_promote, zfs_rename, zfs_set, zfs_snapshot)
 
 log = logging.getLogger(__name__)
 
@@ -100,13 +98,13 @@ class Manager:
                     self.clones.append(zfs)
             self.next_id = format(last_id + 1, '08x')
 
-    def clone(self, max_newer=None, max_total=None):
+    def clone(self, max_newer=None, max_total=None, auto_remove=False):
         if not self.active:
             raise ZCMError('There is no active clone, activate one first')
-        if max_newer and len(self.newer_clones) >= max_newer:
+        if not auto_remove and max_newer is not None and len(self.newer_clones) >= max_newer:
             raise ZCMException(
                 'There are already %d newer clones, can not create another' % len(self.newer_clones))
-        if max_total and len(self.clones) >= max_total:
+        if not auto_remove and max_total is not None and len(self.clones) >= max_total:
             raise ZCMException(
                 'There are already %d clones, can not create another' % len(self.clones))
         snapshot = zfs_snapshot(self.next_id, self.active['name'])
@@ -120,7 +118,22 @@ class Manager:
         self.clones.append(clone)
         log.info('Created clone ' + clone['id'])
         self.load()
+        self.auto_remove(max_newer=max_newer, max_total=max_total)
         return clone
+
+    def auto_remove(self, max_newer=None, max_older=None, max_total=None):
+        while max_older is not None and len(self.older_clones) > max_older:
+            self.remove(self.older_clones[0]['id'])
+        while max_newer is not None and len(self.newer_clones) > max_newer:
+            self.remove(self.newer_clones[0]['id'])
+        while max_total is not None and len(self.clones) > max_total:
+            if self.older_clones:
+                self.remove(self.older_clones[0]['id'])
+            elif self.newer_clones:
+                self.remove(self.newer_clones[0]['id'])
+            else:
+                raise ZCMError(
+                    'There are no more clones to remove in order to satisfy max limit of ' + max_total)
 
     def get_instance(self, id):
         for clone in self.clones:
@@ -154,11 +167,11 @@ class Manager:
             if clone != self.active:
                 zfs_set(clone['name'], mounted=True)
 
-    def activate(self, id, max_newer=None, max_older=None):
+    def activate(self, id, max_newer=None, max_older=None, max_total=None, auto_remove=False):
         active = self.get_instance(id)
         if active == self.active:
             raise ZCMException('Clone %s already active' % id)
-        if max_newer is not None or max_older is not None:
+        if not auto_remove and (max_newer is not None or max_older is not None):
             newer_count = 0
             older_count = 0
             has_reach_active = False
@@ -170,11 +183,11 @@ class Manager:
                         newer_count += 1
                     else:
                         older_count += 1
-            if max_newer is not None and newer_count > max_newer:
+            if not auto_remove and max_newer is not None and newer_count > max_newer:
                 raise ZCMException(
                     'Command denied, Activating %s violates the maximum number of newer clones (%d/%d)'
                     % (id, newer_count, max_newer))
-            if max_older is not None and older_count > max_older:
+            if not auto_remove and max_older is not None and older_count > max_older:
                 raise ZCMException(
                     'Command denied, Activating %s violates the maximum number of older clones (%d/%d)'
                     % (id, older_count, max_older))
@@ -188,6 +201,7 @@ class Manager:
 
         log.info('Activated clone ' + id)
         self.load()
+        self.auto_remove(max_newer=max_newer, max_older=max_older, max_total=max_total)
         return active
 
     def find_clones(self, id):
@@ -212,6 +226,7 @@ class Manager:
             zfs_destroy(clone['origin'])
         if promoted:
             zfs_destroy('%s@%s' % (promoted['name'], promoted['id']))
+        log.info('Removed clone ' + clone['id'])
         self.load()
 
     def print(self, truncate=True):

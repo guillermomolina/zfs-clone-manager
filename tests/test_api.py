@@ -609,7 +609,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(len(manager.older_clones), 0)
         self.assertEqual(len(manager.newer_clones), 5)
 
-    def test_active_options(self):
+    def test_activate_options(self):
         manager = None
         try:
             manager = Manager(directory)
