@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__version__ = "1.1.0-dev"
-AUTHOR = "Guillermo Adrián Molina"
-AUTHOR_EMAIL = "guillermoadrianmolina@hotmail.com"
-NAME = "zfs-history-manager"
-PACKAGE_URL = "http://www.github.com/guillermomolina/zfs-history-manager"
-KEYWORDS = "zfs"
-DESCRIPTION = "Tools to manage ZFS with history metadata"
-LICENSE = "LICENSE"
+from .version import __version__
+from .exceptions import ZCMException, ZCMError
+
+zcm_config = {
+    'max_column_length': 50
+}

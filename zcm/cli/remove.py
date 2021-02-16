@@ -12,26 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import argparse
 
-from zhm.api import Manager
+from zcm.api.manager import Manager
 
 
-class List:
-
+class Remove:
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser('ls',
+        parser = parent_subparsers.add_parser('rm',
                                               parents=[parent_parser],
-                                              aliases=['list'],
+                                              aliases=['remove'],
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='List hosts',
-                                              help='List hosts')
-        parser.add_argument('--no-trunc',
-                            help='Don\'t truncate output',
-                            action='store_true')
+                                              description='Remove one or more clones',
+                                              help='Remove one or more clones')
+        parser.add_argument('id',
+                            nargs='+',
+                            help='ID of the clone to remove')
 
     def __init__(self, options):
         manager = Manager(options.path)
-        manager.print(truncate=(not options.no_trunc))
+        for id in options.id:
+            manager.remove(id)
+            if not options.quiet:
+                print('Removed clone ' + id)

@@ -15,7 +15,7 @@
 
 import argparse
 
-from zhm.api.manager import Manager
+from zcm.api.manager import Manager
 
 
 def are_you_sure(force, path):
@@ -35,8 +35,8 @@ class Destroy:
         parser = parent_subparsers.add_parser('destroy',
                                               parents=[parent_parser],
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='Destroy ZHM on path',
-                                              help='Remove all ZHM metadata (filesystems, clones, snapshots and directories) associated with path')
+                                              description='Destroy ZCM on path',
+                                              help='Remove all ZCM metadata (filesystems, clones, snapshots and directories) associated with path')
         parser.add_argument('--force',
                             help='Force destroy without confirmation',
                             action='store_true')
@@ -46,4 +46,4 @@ class Destroy:
         if are_you_sure(options.force, options.path):
             manager.destroy()
             if not options.quiet:
-                print('Destroyed ZHM at path %s' % options.path)
+                print('Destroyed ZCM at path %s' % options.path)

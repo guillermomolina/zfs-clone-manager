@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from zhm import zhm_config
+from zcm import zcm_config
 
 # TODO: use from prettytable import PrettyTable ?
 
 
 def print_table(table, truncate=True, separation=2, identation=0):
-    MAX_COLUMN_LENGTH = zhm_config['max_column_length']
+    MAX_COLUMN_LENGTH = zcm_config['max_column_length']
     if len(table) == 0:
         return
 

@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .version import __version__
-from .exceptions import ZHMException, ZHMError
-
-zhm_config = {
-    'max_column_length': 50
-}
+__version__ = "2.0.0-dev"
+AUTHOR = "Guillermo Adrián Molina"
+AUTHOR_EMAIL = "guillermoadrianmolina@hotmail.com"
+NAME = "zfs-clone-manager"
+PACKAGE_URL = "http://www.github.com/guillermomolina/zfs-clone-manager"
+KEYWORDS = "zfs"
+DESCRIPTION = "Tools to manage ZFS clones with history metadata"
+LICENSE = "LICENSE"

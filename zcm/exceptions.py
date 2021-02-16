@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class ZHMException(Exception):
-    def __init__(self, message="ZFS history manager exception"):
+class ZCMException(Exception):
+    def __init__(self, message="ZFS Clone Manager exception"):
         super().__init__()
         self.message = message
 
 
-class ZHMError(ZHMException):
-    def __init__(self, message="ZFS history manager fatal error"):
+class ZCMError(ZCMException):
+    def __init__(self, message="ZFS Clone Manager fatal error"):
         super().__init__(message)

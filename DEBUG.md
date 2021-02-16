@@ -30,7 +30,7 @@
 - Launch tool with debug parameter in remote virtualenv
 
 ```bash
-(virtualenv)me@remote $ zhm -D ls
+(virtualenv)me@remote $ zcm -D ls
 ```
 
 - Launch debug config in vscode

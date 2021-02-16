@@ -15,7 +15,7 @@
 
 import argparse
 
-from zhm.api.manager import Manager
+from zcm.api.manager import Manager
 
 
 def check_positive(value):

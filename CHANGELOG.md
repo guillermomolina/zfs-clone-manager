@@ -1,4 +1,10 @@
-# Change log for ZFS History Manager
+# Change log for ZFS Clone Manager
+
+## 2021-02-16: Version 2.0.0
+
+- Renamed project to ZFS Clone Manager
+- Renamed CLI tool to zcm
+
 
 ## 2021-02-15: Version 1.1.0
 
@@ -12,7 +18,8 @@
 
 ## 2021-02-15: Version 1.0.0
 
-- Release
+- First production release
+
 
 ## 2021-02-11: Version 0.0.1
 

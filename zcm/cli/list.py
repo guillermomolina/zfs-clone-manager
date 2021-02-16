@@ -12,27 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import argparse
 
-from zhm.api.manager import Manager
+from zcm.api import Manager
 
 
-class Initialize:
+class List:
+
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser('init',
+        parser = parent_subparsers.add_parser('ls',
                                               parents=[parent_parser],
-                                              aliases=['initialize'],
+                                              aliases=['list'],
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='Init ZHM on specified ZFS',
-                                              help='Init ZHM on specified ZFS')
-        parser.add_argument('zfs',
-                            help='root ZFS')
+                                              description='List hosts',
+                                              help='List hosts')
+        parser.add_argument('--no-trunc',
+                            help='Don\'t truncate output',
+                            action='store_true')
 
     def __init__(self, options):
-        Manager.initialize_zfs(options.zfs, options.path)
-        if not options.quiet:
-            print('ZHM initialized ZFS %s at path %s' %
-                  (options.zfs, options.path))
+        manager = Manager(options.path)
+        manager.print(truncate=(not options.no_trunc))

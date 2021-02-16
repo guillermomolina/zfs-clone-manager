@@ -14,8 +14,8 @@
 
 import argparse
 
-from zhm.api import Manager
-from zhm.api.print import format_bytes, print_info
+from zcm.api import Manager
+from zcm.api.print import format_bytes, print_info
 
 
 class Information:
@@ -27,8 +27,8 @@ class Information:
                                               parents=[parent_parser],
                                               aliases=['information'],
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='Show ZHM information',
-                                              help='Show ZHM information')
+                                              description='Show ZCM information',
+                                              help='Show ZCM information')
         parser.add_argument('-P', '--parseable',
                             help='Show parseable info',
                             action='store_true')

@@ -15,23 +15,24 @@
 
 import argparse
 
-from zhm.api.manager import Manager
+from zcm.api.manager import Manager
 
 
-class Activate:
+class Initialize:
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser('activate',
+        parser = parent_subparsers.add_parser('init',
                                               parents=[parent_parser],
+                                              aliases=['initialize'],
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='activate an clone',
-                                              help='activate an clone')
-        parser.add_argument('id',
-                            help='clone id to activate')
+                                              description='Init ZCM on specified ZFS',
+                                              help='Init ZCM on specified ZFS')
+        parser.add_argument('zfs',
+                            help='root ZFS')
 
     def __init__(self, options):
-        manager = Manager(options.path)
-        clone = manager.activate(options.id)
+        Manager.initialize_zfs(options.zfs, options.path)
         if not options.quiet:
-            print('Activated clone ' + clone['id'])
+            print('ZCM initialized ZFS %s at path %s' %
+                  (options.zfs, options.path))

@@ -24,7 +24,7 @@ def get_lookup():
     '''get version by way of the version file
     '''
     lookup = dict()
-    version_file = os.path.join('zhm', 'version.py')
+    version_file = os.path.join('zcm', 'version.py')
     with open(version_file) as filey:
         exec(filey.read(), lookup)
     return lookup
@@ -82,7 +82,7 @@ if __name__ == "__main__":
         install_requires=INSTALL_REQUIRES,
         entry_points={
             'console_scripts': [
-                'zhm = zhm.cli.main:main'
+                'zcm = zcm.cli.main:main'
             ]
         },
         classifiers=[

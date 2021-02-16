@@ -18,15 +18,15 @@ import importlib
 import logging
 from pathlib import Path
 
-from zhm import __version__, zhm_config
-from zhm.cli.activate import Activate
-from zhm.cli.clone import Clone
-from zhm.cli.destroy import Destroy
-from zhm.cli.information import Information
-from zhm.cli.initialize import Initialize
-from zhm.cli.list import List
-from zhm.cli.remove import Remove
-from zhm.exceptions import ZHMException
+from zcm import __version__, zcm_config
+from zcm.cli.activate import Activate
+from zcm.cli.clone import Clone
+from zcm.cli.destroy import Destroy
+from zcm.cli.information import Information
+from zcm.cli.initialize import Initialize
+from zcm.cli.list import List
+from zcm.cli.remove import Remove
+from zcm.exceptions import ZCMException
 
 log = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ class CLI:
     def __init__(self):
         parser = argparse.ArgumentParser(
             formatter_class=CustomFormatter,
-            description='A self-sufficient history for ZFS')
+            description='A self-sufficient history tool for ZFS clones')
         parser.add_argument('-V', '--version',
                             help='Print version information and quit',
                             action='version',
@@ -114,7 +114,7 @@ class CLI:
         try:
             command = CLI.commands[options.command]
             command(options)
-        except ZHMException as e:
+        except ZCMException as e:
             log.error(e.message)
             print(e.message)
             exit(-1)

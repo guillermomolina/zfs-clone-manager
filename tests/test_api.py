@@ -15,9 +15,9 @@
 import unittest
 from pathlib import Path
 
-from zhm.api.manager import Manager
-from zhm.api.zfs import zfs_exists, zfs_get, zfs_is_filesystem, zfs_is_snapshot
-from zhm.exceptions import ZHMError
+from zcm.api.manager import Manager
+from zcm.api.zfs import zfs_exists, zfs_get, zfs_is_filesystem, zfs_is_snapshot
+from zcm.exceptions import ZCMError
 
 zfs = 'rpool/my/cool/zfs/directory'
 directory = '/my_cool_zfs_directory'
@@ -27,24 +27,24 @@ class TestAPI(unittest.TestCase):
     def setUp(self):
         try:
             Manager.initialize_zfs(zfs, directory)
-        except ZHMError:
+        except ZCMError:
             pass
         return super().setUp()
 
     def tearDown(self):
         try:
             Manager(directory).destroy()
-        except ZHMError:
+        except ZCMError:
             pass
         return super().tearDown()
 
     def test_initialize(self):
-        with self.assertRaises(ZHMError):
+        with self.assertRaises(ZCMError):
             Manager.initialize_zfs(zfs, directory)
         manager = None
         try:
             manager = Manager(directory)
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
@@ -79,11 +79,11 @@ class TestAPI(unittest.TestCase):
         manager = None
         try:
             manager = Manager(directory)
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
             manager.clone()
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
@@ -132,17 +132,17 @@ class TestAPI(unittest.TestCase):
         manager = None
         try:
             manager = Manager(directory)
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
             manager.clone()
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.activate('00000001')
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
-        with self.assertRaises(ZHMError):
+        with self.assertRaises(ZCMError):
             manager.remove('00000001')
 
         self.assertEqual(manager.path, Path(directory))
@@ -191,15 +191,15 @@ class TestAPI(unittest.TestCase):
         manager = None
         try:
             manager = Manager(directory)
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
             manager.clone()
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.remove('00000001')
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
@@ -240,19 +240,19 @@ class TestAPI(unittest.TestCase):
         manager = None
         try:
             manager = Manager(directory)
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
             manager.clone()
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.activate('00000001')
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.remove('00000000')
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
@@ -293,15 +293,15 @@ class TestAPI(unittest.TestCase):
         manager = None
         try:
             manager = Manager(directory)
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
             manager.clone()
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.clone()
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
@@ -364,21 +364,21 @@ class TestAPI(unittest.TestCase):
         manager = None
         try:
             manager = Manager(directory)
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
             manager.clone()
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.clone()
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.activate('00000001')
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
-        with self.assertRaises(ZHMError):
+        with self.assertRaises(ZCMError):
             manager.remove('00000001')
 
         self.assertEqual(manager.path, Path(directory))
@@ -441,23 +441,23 @@ class TestAPI(unittest.TestCase):
         manager = None
         try:
             manager = Manager(directory)
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
             manager.clone()
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.clone()
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.activate('00000001')
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.remove('00000002')
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
@@ -512,23 +512,23 @@ class TestAPI(unittest.TestCase):
         manager = None
         try:
             manager = Manager(directory)
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
             manager.clone()
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.clone()
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.activate('00000001')
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
             manager.remove('00000000')
-        except ZHMError as e:
+        except ZCMError as e:
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))

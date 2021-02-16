@@ -16,8 +16,8 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
-from zhm.api.print import format_bytes
-from zhm.exceptions import ZHMError, ZHMException
+from zcm.api.print import format_bytes
+from zcm.exceptions import ZCMError, ZCMException
 
 from .print import print_table
 from .zfs import (zfs_clone, zfs_create, zfs_destroy, zfs_exists, zfs_get,
@@ -34,7 +34,7 @@ def get_zfs_for_path(path):
     if len(zfs_list_output) == 1 and zfs_list_output[0]['mountpoint'] == hidden_path:
         zfs = zfs_list_output[0]['name']
         return zfs
-    raise ZHMError('The path %s is invalid or uninitialized' % path)
+    raise ZCMError('The path %s is invalid or uninitialized' % path)
 
 
 def snapshot_to_origin_id(snapshot):
@@ -63,14 +63,14 @@ class Manager:
     def initialize_zfs(zfs, path_str):
         path = Path(path_str)
         if path.exists():
-            raise ZHMError('Path %s already exists, can not use it' % path_str)
+            raise ZCMError('Path %s already exists, can not use it' % path_str)
         if zfs_exists(zfs):
-            raise ZHMError('ZFS %s already created, can not use it' % zfs)
+            raise ZCMError('ZFS %s already created, can not use it' % zfs)
         clone = zfs_create('00000000', zfs, mountpoint=path, recursive=True)
         if clone is None:
-            raise ZHMError('Could not clone ZFS %s at %s' % (zfs, path_str))
+            raise ZCMError('Could not clone ZFS %s at %s' % (zfs, path_str))
         zfs_set(zfs, mountpoint=Path(path, '.clones'))
-        log.info('Created ZHM %s at path %s' % (zfs, path_str))
+        log.info('Created ZCM %s at path %s' % (zfs, path_str))
 
     def load(self):
         self.clones = []
@@ -100,13 +100,15 @@ class Manager:
                     self.clones.append(zfs)
             self.next_id = format(last_id + 1, '08x')
 
-    def clone(self, max_newer, max_total):
+    def clone(self, max_newer=None, max_total=None):
         if not self.active:
-            raise ZHMError('There is no active clone, activate one first')
+            raise ZCMError('There is no active clone, activate one first')
         if max_newer and len(self.newer_clones) >= max_newer:
-            raise ZHMException('There are already %d newer clones, can not create another' % len(self.newer_clones))
+            raise ZCMException(
+                'There are already %d newer clones, can not create another' % len(self.newer_clones))
         if max_total and len(self.clones) >= max_total:
-            raise ZHMException('There are already %d clones, can not create another' % len(self.clones))
+            raise ZCMException(
+                'There are already %d clones, can not create another' % len(self.clones))
         snapshot = zfs_snapshot(self.next_id, self.active['name'])
         zfs = zfs_clone(self.zfs + '/' + self.next_id, snapshot)
         clone = {
@@ -124,7 +126,7 @@ class Manager:
         for clone in self.clones:
             if clone['id'] == id:
                 return clone
-        raise ZHMError('There is no clone with id ' + id)
+        raise ZCMError('There is no clone with id ' + id)
 
     def unmount(self):
         failed = []
@@ -140,12 +142,12 @@ class Manager:
         if failed:
             # at lest one unmount failed, remount all and fail
             self.mount()
-            raise ZHMError('Failed to unmount %s, device(s) in use' %
+            raise ZCMError('Failed to unmount %s, device(s) in use' %
                            ' and'.join(failed))
 
     def mount(self):
         if not self.active:
-            raise ZHMError('There is no active clone, activate one first')
+            raise ZCMError('There is no active clone, activate one first')
         zfs_set(self.active['name'], mounted=True)
         zfs_set(self.zfs, mounted=True)
         for clone in self.clones:
@@ -179,7 +181,7 @@ class Manager:
     def remove(self, id):
         clone = self.get_instance(id)
         if clone == self.active:
-            raise ZHMError(
+            raise ZCMError(
                 'Clone with id %s is active, can not remove' % id)
         clones = self.find_clones(id)
         promoted = None
@@ -209,8 +211,8 @@ class Manager:
     def destroy(self):
         self.unmount()
         if zfs_destroy(self.zfs, recursive=True) != 0:
-            raise ZHMError('Could not destroy ZFS ' + self.zfs)
+            raise ZCMError('Could not destroy ZFS ' + self.zfs)
         try:
             self.path.rmdir()
         except OSError as e:
-            raise ZHMError('Could not destroy path ' + self.path)
+            raise ZCMError('Could not destroy path ' + self.path)

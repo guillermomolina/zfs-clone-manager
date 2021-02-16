@@ -15,26 +15,23 @@
 
 import argparse
 
-from zhm.api.manager import Manager
+from zcm.api.manager import Manager
 
 
-class Remove:
+class Activate:
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser('rm',
+        parser = parent_subparsers.add_parser('activate',
                                               parents=[parent_parser],
-                                              aliases=['remove'],
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='Remove one or more clones',
-                                              help='Remove one or more clones')
+                                              description='activate an clone',
+                                              help='activate an clone')
         parser.add_argument('id',
-                            nargs='+',
-                            help='ID of the clone to remove')
+                            help='clone id to activate')
 
     def __init__(self, options):
         manager = Manager(options.path)
-        for id in options.id:
-            manager.remove(id)
-            if not options.quiet:
-                print('Removed clone ' + id)
+        clone = manager.activate(options.id)
+        if not options.quiet:
+            print('Activated clone ' + clone['id'])
