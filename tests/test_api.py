@@ -17,7 +17,7 @@ from pathlib import Path
 
 from zcm.api.manager import Manager
 from zcm.api.zfs import zfs_exists, zfs_get, zfs_is_filesystem, zfs_is_snapshot
-from zcm.exceptions import ZCMError
+from zcm.exceptions import ZCMError, ZCMException
 
 zfs = 'rpool/my/cool/zfs/directory'
 directory = '/my_cool_zfs_directory'
@@ -578,6 +578,33 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
         self.assertTrue(path.is_dir())
+
+
+    def test_clone_options(self):
+        manager = None
+        try:
+            manager = Manager(directory)
+        except ZCMError as e:
+            self.fail('Instantiation should not raise exceptions')
+        try:
+            manager.clone()
+            manager.clone()
+            manager.clone()
+            manager.clone()
+            manager.clone()
+        except ZCMError as e:
+            self.fail('Creation should not raise exceptions')
+        with self.assertRaises(ZCMException):
+            manager.clone(max_newer=5)
+        with self.assertRaises(ZCMException):
+            manager.clone(max_total=6)
+
+        self.assertEqual(manager.path, Path(directory))
+        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.active, manager.clones[0])
+        self.assertEqual(manager.next_id, '00000006')
+        self.assertEqual(len(manager.older_clones), 0)
+        self.assertEqual(len(manager.newer_clones), 5)
 
 
 if __name__ == '__main__':
