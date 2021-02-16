@@ -16,16 +16,17 @@
 import argparse
 import importlib
 import logging
-from zhm import __version__
-from zhm import zhm_config
+from pathlib import Path
+
+from zhm import __version__, zhm_config
+from zhm.cli.activate import Activate
+from zhm.cli.clone import Clone
+from zhm.cli.destroy import Destroy
+from zhm.cli.information import Information
 from zhm.cli.initialize import Initialize
 from zhm.cli.list import List
-from zhm.cli.clone import Clone
-from zhm.cli.activate import Activate
 from zhm.cli.remove import Remove
-from zhm.cli.destroy import Destroy
 from zhm.exceptions import ZHMException
-from pathlib import Path
 
 log = logging.getLogger(__name__)
 
@@ -52,6 +53,7 @@ class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter,
 class CLI:
     commands = {
         'init': Initialize,
+        'info': Information,
         'ls': List,
         'clone': Clone,
         'activate': Activate,
