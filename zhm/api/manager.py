@@ -52,7 +52,7 @@ class Manager:
     def __init__(self, path):
         self.path = Path(path)
         self.zfs = None
-        self.instances = []
+        self.clones = []
         self.active = None
         self.next_id = None
         self.load()
@@ -71,7 +71,7 @@ class Manager:
         log.info('Created ZHM %s at path %s' % (zfs, path_str))
 
     def load(self):
-        self.instances = []
+        self.clones = []
         self.active = None
         self.next_id = None
         if self.path.is_dir():
@@ -88,7 +88,7 @@ class Manager:
                     zfs['origin_id'] = snapshot_to_origin_id(zfs['origin'])
                     if zfs['mountpoint'] == self.path:
                         self.active = zfs
-                    self.instances.append(zfs)
+                    self.clones.append(zfs)
             self.next_id = format(last_id + 1, '08x')
 
     def clone(self):
@@ -102,20 +102,20 @@ class Manager:
             'origin': snapshot,
             'mountpoint': zfs_get(zfs, 'mountpoint')
         }
-        self.instances.append(clone)
+        self.clones.append(clone)
         log.info('Created clone ' + clone['id'])
         self.load()
         return clone
 
     def get_instance(self, id):
-        for clone in self.instances:
+        for clone in self.clones:
             if clone['id'] == id:
                 return clone
         raise ZHMError('There is no clone with id ' + id)
 
     def unmount(self):
         failed = []
-        for clone in self.instances:
+        for clone in self.clones:
             if clone != self.active:
                 if zfs_set(clone['name'], mounted=False) != 0:
                     failed.append(clone['name'])
@@ -135,7 +135,7 @@ class Manager:
             raise ZHMError('There is no active clone, activate one first')
         zfs_set(self.active['name'], mounted=True)
         zfs_set(self.zfs, mounted=True)
-        for clone in self.instances:
+        for clone in self.clones:
             if clone != self.active:
                 zfs_set(clone['name'], mounted=True)
 
@@ -158,7 +158,7 @@ class Manager:
 
     def find_clones(self, id):
         clones = []
-        for clone in self.instances:
+        for clone in self.clones:
             if clone['origin_id'] == id:
                 clones.append(clone)
         return clones
@@ -182,7 +182,7 @@ class Manager:
 
     def print(self, truncate=True):
         table = []
-        for clone in self.instances:
+        for clone in self.clones:
             table.append({
                 'a': '*' if self.active == clone else ' ',
                 'id': clone['id'],

@@ -26,8 +26,8 @@ class Remove:
                                               parents=[parent_parser],
                                               aliases=['remove'],
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='Remove one or more instances',
-                                              help='Remove one or more instances')
+                                              description='Remove one or more clones',
+                                              help='Remove one or more clones')
         parser.add_argument('id',
                             nargs='+',
                             help='ID of the clone to remove')

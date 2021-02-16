@@ -39,10 +39,10 @@ class Information:
             'Path': manager.path,
             'Root ZFS': manager.zfs,
             'Root ZFS size': format_bytes(manager.used),
-            'Clone count': len(manager.instances),
-            'Oldest clone ID': manager.instances[0]['id'],
+            'Clone count': len(manager.clones),
+            'Oldest clone ID': manager.clones[0]['id'],
             'Active clone ID': manager.active['id'],
-            'Newest clone ID': manager.instances[-1]['id'],
+            'Newest clone ID': manager.clones[-1]['id'],
             'Next clone ID': manager.next_id
         }
         if options.parseable:
