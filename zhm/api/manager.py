@@ -17,7 +17,7 @@ from datetime import datetime
 from pathlib import Path
 
 from zhm.api.print import format_bytes
-from zhm.exceptions import ZHMError
+from zhm.exceptions import ZHMError, ZHMException
 
 from .print import print_table
 from .zfs import (zfs_clone, zfs_create, zfs_destroy, zfs_exists, zfs_get,
@@ -53,6 +53,8 @@ class Manager:
         self.path = Path(path)
         self.zfs = None
         self.clones = []
+        self.older_clones = []
+        self.newer_clones = []
         self.active = None
         self.next_id = None
         self.load()
@@ -72,6 +74,8 @@ class Manager:
 
     def load(self):
         self.clones = []
+        self.older_clones = []
+        self.newer_clones = []
         self.active = None
         self.next_id = None
         if self.path.is_dir():
@@ -88,12 +92,21 @@ class Manager:
                     zfs['origin_id'] = snapshot_to_origin_id(zfs['origin'])
                     if zfs['mountpoint'] == self.path:
                         self.active = zfs
+                    else:
+                        if self.active:
+                            self.newer_clones.append(zfs)
+                        else:
+                            self.older_clones.append(zfs)
                     self.clones.append(zfs)
             self.next_id = format(last_id + 1, '08x')
 
-    def clone(self):
+    def clone(self, max_newer, max_total):
         if not self.active:
             raise ZHMError('There is no active clone, activate one first')
+        if max_newer and len(self.newer_clones) >= max_newer:
+            raise ZHMException('There are already %d newer clones, can not create another' % len(self.newer_clones))
+        if max_total and len(self.clones) >= max_total:
+            raise ZHMException('There are already %d clones, can not create another' % len(self.clones))
         snapshot = zfs_snapshot(self.next_id, self.active['name'])
         zfs = zfs_clone(self.zfs + '/' + self.next_id, snapshot)
         clone = {

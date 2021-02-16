@@ -6,6 +6,8 @@
 - Added info command
 - Added zfs size info
 - Renamed Manager.instances to Manager.clones
+- Added older and newer lists
+- Added --max-newer and --max-total options to clone command
 
 
 ## 2021-02-15: Version 1.0.0

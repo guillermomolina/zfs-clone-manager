@@ -18,6 +18,12 @@ import argparse
 from zhm.api.manager import Manager
 
 
+def check_positive(value):
+    ivalue = int(value)
+    if ivalue <= 0:
+        raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
+    return ivalue
+
 class Clone:
     @staticmethod
     def init_parser(parent_subparsers):
@@ -27,9 +33,15 @@ class Clone:
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             description='Clone a new clone',
             help='Clone a new clone')
+        parser.add_argument('-m', '--max-newer',
+                            type=check_positive,
+                            help='Do not clone if there are <max-newer> newer clones')
+        parser.add_argument('-t', '--max-total',
+                            type=check_positive,
+                            help='Do not clone if there are <max-total> clones')
  
     def __init__(self, options):
         manager = Manager(options.path)
-        clone = manager.clone()
+        clone = manager.clone(options.max_newer, options.max_total)
         if not options.quiet:
             print('Created clone %s at path %s' % (clone['id'], clone['mountpoint']))

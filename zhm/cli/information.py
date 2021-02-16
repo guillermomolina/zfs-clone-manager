@@ -40,6 +40,8 @@ class Information:
             'Root ZFS': manager.zfs,
             'Root ZFS size': format_bytes(manager.used),
             'Clone count': len(manager.clones),
+            'Older clone count': len(manager.older_clones),
+            'Newer clone count': len(manager.newer_clones),
             'Oldest clone ID': manager.clones[0]['id'],
             'Active clone ID': manager.active['id'],
             'Newest clone ID': manager.clones[-1]['id'],

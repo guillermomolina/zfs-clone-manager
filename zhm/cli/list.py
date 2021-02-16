@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import argparse
+
 from zhm.api import Manager
 
 
@@ -33,4 +34,4 @@ class List:
 
     def __init__(self, options):
         manager = Manager(options.path)
-        manager.print()
+        manager.print(truncate=(not options.no_trunc))
