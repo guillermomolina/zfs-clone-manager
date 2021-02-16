@@ -18,6 +18,16 @@ import argparse
 from zcm.api.manager import Manager
 
 
+def are_you_sure(force, id):
+    if force:
+        return True
+    print('WARNING!!!!!!!!')
+    print('All the filesystems, snapshots and directories associated with clone %s will be permanently deleted.' % id)
+    print('This operation is not reversible.')
+    answer = input('Do you want to proceed? (yes/NO) ')
+    return answer == 'yes'
+
+
 class Remove:
     @staticmethod
     def init_parser(parent_subparsers):
@@ -28,6 +38,9 @@ class Remove:
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='Remove one or more clones',
                                               help='Remove one or more clones')
+        parser.add_argument('--force',
+                            help='Force remove clone without confirmation',
+                            action='store_true')
         parser.add_argument('id',
                             nargs='+',
                             help='ID of the clone to remove')
@@ -35,6 +48,7 @@ class Remove:
     def __init__(self, options):
         manager = Manager(options.path)
         for id in options.id:
-            manager.remove(id)
-            if not options.quiet:
-                print('Removed clone ' + id)
+            if are_you_sure(options.force, id):
+                manager.remove(id)
+                if not options.quiet:
+                    print('Removed clone ' + id)
