@@ -36,4 +36,5 @@ class Activate:
     def __init__(self, options):
         manager = Manager(options.path)
         instance = manager.activate(options.id)
-        print('Activated instance ' + instance['id'])
+        if not options.quiet:
+            print('Activated instance ' + instance['id'])

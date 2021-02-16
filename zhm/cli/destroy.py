@@ -46,4 +46,5 @@ class Destroy:
         manager = Manager(options.path)
         if are_you_sure(options.force, options.path):
             manager.destroy()
-            print('Destroyed ZHM at path %s' % options.path)
+            if not options.quiet:
+                    print('Destroyed ZHM at path %s' % options.path)

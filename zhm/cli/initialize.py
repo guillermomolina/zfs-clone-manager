@@ -37,5 +37,6 @@ class Initialize:
 
     def __init__(self, options):
         Manager.initialize_zfs(options.zfs, options.path)
-        print('ZHM initialized ZFS %s at path %s' %
+        if not options.quiet:
+            print('ZHM initialized ZFS %s at path %s' %
               (options.zfs, options.path))

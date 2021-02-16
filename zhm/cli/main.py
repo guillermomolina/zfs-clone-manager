@@ -82,6 +82,9 @@ class CLI:
         parser.add_argument('-D', '--debug',
                             help='Enable debug mode',
                             action='store_true')
+        parser.add_argument('-q', '--quiet',
+                            help='Enable quiet mode',
+                            action='store_true')
         parser.add_argument('-p', '--path',
                             help='path to manage')
 

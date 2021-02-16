@@ -40,4 +40,5 @@ class Remove:
         manager = Manager(options.path)
         for id in options.id:
             manager.remove(id)
-            print('Removed instance ' + id)
+            if not options.quiet:
+                print('Removed instance ' + id)

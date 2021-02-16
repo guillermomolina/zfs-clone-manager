@@ -33,4 +33,5 @@ class Clone:
     def __init__(self, options):
         manager = Manager(options.path)
         instance = manager.clone()
-        print('Created instance %s at path %s' % (instance['id'], instance['mountpoint']))
+        if not options.quiet:
+            print('Created instance %s at path %s' % (instance['id'], instance['mountpoint']))
