@@ -51,15 +51,7 @@ class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter,
 
 
 class CLI:
-    commands = {
-        'init': Initialize,
-        'info': Information,
-        'ls': List,
-        'clone': Clone,
-        'activate': Activate,
-        'rm': Remove,
-        'destroy': Destroy
-    }
+    commands = [Initialize, Information, List, Clone, Activate, Remove, Destroy]
 
     def __init__(self):
         parser = argparse.ArgumentParser(
@@ -87,15 +79,13 @@ class CLI:
         parser.add_argument('-q', '--quiet',
                             help='Enable quiet mode',
                             action='store_true')
-        parser.add_argument('-p', '--path',
-                            help='path to manage')
 
         subparsers = parser.add_subparsers(
             dest='command',
             metavar='COMMAND',
             required=True)
 
-        for command in CLI.commands.values():
+        for command in CLI.commands:
             command.init_parser(subparsers)
 
         options = parser.parse_args()
@@ -108,11 +98,8 @@ class CLI:
             log.info("Waiting for IDE to attach...")
             debugpy.wait_for_client()
 
-        if not options.path:
-            options.path = Path.cwd().as_posix()
-
         try:
-            command = CLI.commands[options.command]
+            command = [command for command in commands if options.command == command.name or options.command in command.aliases]
             command(options)
         except ZCMException as e:
             log.error(e.message)

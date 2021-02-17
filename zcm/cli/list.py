@@ -20,19 +20,25 @@ from zcm.lib.print import format_bytes, print_table
 
 
 class List:
+    name = 'list'
+    aliases = ['ls']
 
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser('ls',
+        parser = parent_subparsers.add_parser(List.name,
                                               parents=[parent_parser],
-                                              aliases=['list'],
+                                              aliases=List.aliases,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='List hosts',
                                               help='List hosts')
         parser.add_argument('--no-trunc',
                             help='Don\'t truncate output',
                             action='store_true')
+        parser.add_argument('path',
+                            nargs='*',
+                            metavar='filesystem|path',
+                            help='zfs filesystem or path to show')
 
     def __init__(self, options):
         manager = Manager(options.path)

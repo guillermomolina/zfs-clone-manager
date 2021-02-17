@@ -19,13 +19,15 @@ from zcm.lib.print import format_bytes, print_info, print_table
 
 
 class Information:
+    name = 'information'
+    aliases = ['info']
 
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser('info',
+        parser = parent_subparsers.add_parser(Information.name,
                                               parents=[parent_parser],
-                                              aliases=['information'],
+                                              aliases=Information.aliases,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='Show ZCM information',
                                               help='Show ZCM information')

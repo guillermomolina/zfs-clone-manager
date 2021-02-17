@@ -20,11 +20,15 @@ from zcm.lib.helpers import check_one_or_more, check_positive
 
 
 class Activate:
+    name = 'activate'
+    aliases = []
+
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser('activate',
+        parser = parent_subparsers.add_parser(Activate.name,
                                               parents=[parent_parser],
+                                              aliases=Activate.aliases,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='activate an clone',
                                               help='activate an clone')

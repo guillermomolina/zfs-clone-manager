@@ -29,11 +29,15 @@ def are_you_sure(force, path):
 
 
 class Destroy:
+    name = 'destroy'
+    aliases = []
+
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser('destroy',
+        parser = parent_subparsers.add_parser(Destroy.name,
                                               parents=[parent_parser],
+                                              aliases=Destroy.aliases,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='Destroy ZCM on path',
                                               help='Remove all ZCM metadata (filesystems, clones, snapshots and directories) associated with path')

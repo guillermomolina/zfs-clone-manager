@@ -20,11 +20,15 @@ from zcm.lib.helpers import check_one_or_more
 
 
 class Clone:
+    name = 'clone'
+    aliases = []
+
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser('clone',
+        parser = parent_subparsers.add_parser(Clone.name,
                                               parents=[parent_parser],
+                                              aliases=Clone.aliases,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='Clone a new clone',
                                               help='Clone a new clone')

@@ -29,12 +29,15 @@ def are_you_sure(force, id):
 
 
 class Remove:
+    name = 'remove'
+    aliases = ['rm']
+
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser('rm',
+        parser = parent_subparsers.add_parser(Remove.name,
                                               parents=[parent_parser],
-                                              aliases=['remove'],
+                                              aliases=Remove.aliases,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='Remove one or more clones',
                                               help='Remove one or more clones')

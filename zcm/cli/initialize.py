@@ -19,12 +19,15 @@ from zcm.api.manager import Manager
 
 
 class Initialize:
+    name = 'initialize'
+    aliases = ['init']
+
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser('init',
+        parser = parent_subparsers.add_parser(Initialize.name,
                                               parents=[parent_parser],
-                                              aliases=['initialize'],
+                                              aliases=Initialize.aliases,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='Init ZCM on specified ZFS',
                                               help='Init ZCM on specified ZFS')

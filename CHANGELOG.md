@@ -1,5 +1,11 @@
 # Change log for ZFS Clone Manager
 
+## 2021-XX-XX: Version 3.0.0
+
+- Moved parameter -p,--path as subcommand argument filesystem|path
+- Changed subcommand name and aliases behavior 
+
+
 ## 2021-02-17: Version 2.2.0
 
 - Added --auto-remove activate and clone commands
