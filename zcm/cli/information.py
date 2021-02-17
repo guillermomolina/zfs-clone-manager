@@ -15,7 +15,7 @@
 import argparse
 
 from zcm.api import Manager
-from zcm.lib.print import format_bytes, print_info
+from zcm.lib.print import format_bytes, print_info, print_table
 
 
 class Information:
@@ -35,19 +35,31 @@ class Information:
 
     def __init__(self, options):
         manager = Manager(options.path)
-        data = {
-            'Path': manager.path,
-            'Root ZFS': manager.zfs,
-            'Root ZFS size': format_bytes(manager.used),
-            'Clone count': len(manager.clones),
-            'Older clone count': len(manager.older_clones),
-            'Newer clone count': len(manager.newer_clones),
-            'Oldest clone ID': manager.clones[0]['id'],
-            'Active clone ID': manager.active['id'],
-            'Newest clone ID': manager.clones[-1]['id'],
-            'Next clone ID': manager.next_id
-        }
         if options.parseable:
-            print_info(data)
+            data = {
+                'path': manager.path,
+                'zfs': manager.zfs,
+                'size': format_bytes(manager.used),
+                'total': len(manager.clones),
+                'older': len(manager.older_clones),
+                'newer': len(manager.newer_clones),
+                'oldest_id': manager.clones[0]['id'],
+                'active_id': manager.active['id'],
+                'newest_id': manager.clones[-1]['id'],
+                'next_id': manager.next_id
+            }
+            print_table([data])
         else:
+            data = {
+                'Path': manager.path,
+                'Root ZFS': manager.zfs,
+                'Root ZFS size': format_bytes(manager.used),
+                'Total clone count': len(manager.clones),
+                'Older clone count': len(manager.older_clones),
+                'Newer clone count': len(manager.newer_clones),
+                'Oldest clone ID': manager.clones[0]['id'],
+                'Active clone ID': manager.active['id'],
+                'Newest clone ID': manager.clones[-1]['id'],
+                'Next clone ID': manager.next_id
+            }
             print_info(data)

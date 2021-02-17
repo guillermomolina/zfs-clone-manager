@@ -1,11 +1,13 @@
 # Change log for ZFS Clone Manager
 
-## 2021-XX-XX: Version 2.2.0
+## 2021-02-17: Version 2.2.0
 
 - Added --auto-remove activate and clone commands
 - Unified helper functions in lib module
 - Added confirmation message to remove command
 - Added --max-total to activate command
+- Moved print from Manager to CLI
+- Added parseable output to information command
 
 
 ## 2021-02-16: Version 2.1.0
