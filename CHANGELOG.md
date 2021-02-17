@@ -4,6 +4,9 @@
 
 - Moved parameter -p,--path as subcommand argument filesystem|path
 - Changed subcommand name and aliases behavior 
+- Added zfs_clone_manager:path and zfs_clone_manager:active ZFS properties handling
+- Renamed zfs property to name in Manager
+- Better handling of on/off properties in zfs
 
 
 ## 2021-02-17: Version 2.2.0

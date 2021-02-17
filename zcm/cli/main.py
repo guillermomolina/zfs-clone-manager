@@ -99,8 +99,10 @@ class CLI:
             debugpy.wait_for_client()
 
         try:
-            command = [command for command in commands if options.command == command.name or options.command in command.aliases]
-            command(options)
+            for command in self.commands:
+                if options.command == command.name or options.command in command.aliases:
+                    command(options)
+                    break
         except ZCMException as e:
             log.error(e.message)
             print(e.message)

@@ -48,7 +48,7 @@ def snapshot_to_origin_id(snapshot):
 class Manager:
     def __init__(self, path):
         self.path = Path(path)
-        self.zfs = None
+        self.name = None
         self.clones = []
         self.older_clones = []
         self.newer_clones = []
@@ -57,17 +57,24 @@ class Manager:
         self.load()
 
     @staticmethod
-    def initialize_zfs(zfs, path_str):
+    def get_managers():
+        zfs_list_output = zfs_list(properties=[
+                                   'zfs_clone_manager:path', 'zfs_clone_manager:active'], recursive=True)
+        return [Manager(zfs['zfs_clone_manager:path']) for zfs in zfs_list_output if zfs['zfs_clone_manager:path']
+                is not None and zfs['zfs_clone_manager:active'] is None]
+
+    @staticmethod
+    def initialize_zfs(zfs_str, path_str):
         path = Path(path_str)
         if path.exists():
             raise ZCMError('Path %s already exists, can not use it' % path_str)
-        if zfs_exists(zfs):
-            raise ZCMError('ZFS %s already created, can not use it' % zfs)
-        clone = zfs_create('00000000', zfs, mountpoint=path, recursive=True)
-        if clone is None:
-            raise ZCMError('Could not clone ZFS %s at %s' % (zfs, path_str))
-        zfs_set(zfs, mountpoint=Path(path, '.clones'))
-        log.info('Created ZCM %s at path %s' % (zfs, path_str))
+        if zfs_exists(zfs_str):
+            raise ZCMError('ZFS %s already created, can not use it' % zfs_str)
+        zfs = zfs_create('00000000', zfs_str, mountpoint=path, recursive=True, zcm_active=True)
+        if zfs is None:
+            raise ZCMError('Could not clone ZFS %s at %s' % (zfs_str, path_str))
+        zfs_set(zfs_str, mountpoint=Path(path, '.clones'), zcm_path=path_str)
+        log.info('Created ZCM %s at path %s' % (zfs_str, path_str))
 
     def load(self):
         self.clones = []
@@ -76,12 +83,12 @@ class Manager:
         self.active = None
         self.next_id = None
         if self.path.is_dir():
-            self.zfs = get_zfs_for_path(self.path)
+            self.name = get_zfs_for_path(self.path)
             last_id = 0
-            zfs_list_output = zfs_list(self.zfs, zfs_type='filesystem', properties=[
+            zfs_list_output = zfs_list(self.name, zfs_type='filesystem', properties=[
                                        'name', 'origin', 'mountpoint', 'creation', 'used'], recursive=True)
             for zfs in zfs_list_output:
-                if zfs['name'] == self.zfs:
+                if zfs['name'] == self.name:
                     self.used = zfs['used']
                 else:
                     zfs['id'] = zfs['name'].split('/')[-1]
@@ -107,7 +114,7 @@ class Manager:
             raise ZCMException(
                 'There are already %d clones, can not create another' % len(self.clones))
         snapshot = zfs_snapshot(self.next_id, self.active['name'])
-        zfs = zfs_clone(self.zfs + '/' + self.next_id, snapshot)
+        zfs = zfs_clone(self.name + '/' + self.next_id, snapshot)
         clone = {
             'id': self.next_id,
             'name': zfs,
@@ -146,8 +153,8 @@ class Manager:
             if clone != self.active:
                 if zfs_set(clone['name'], mounted=False) != 0:
                     failed.append(clone['name'])
-        if zfs_set(self.zfs, mounted=False) != 0:
-            failed.append(self.zfs)
+        if zfs_set(self.name, mounted=False) != 0:
+            failed.append(self.name)
         if self.active is not None:
             if zfs_set(self.active['name'], mounted=False) != 0:
                 failed.append(self.active['name'])
@@ -161,7 +168,7 @@ class Manager:
         if not self.active:
             raise ZCMError('There is no active clone, activate one first')
         zfs_set(self.active['name'], mounted=True)
-        zfs_set(self.zfs, mounted=True)
+        zfs_set(self.name, mounted=True)
         for clone in self.clones:
             if clone != self.active:
                 zfs_set(clone['name'], mounted=True)
@@ -200,7 +207,8 @@ class Manager:
 
         log.info('Activated clone ' + id)
         self.load()
-        self.auto_remove(max_newer=max_newer, max_older=max_older, max_total=max_total)
+        self.auto_remove(max_newer=max_newer,
+                         max_older=max_older, max_total=max_total)
         return active
 
     def find_clones(self, id):
@@ -230,8 +238,8 @@ class Manager:
 
     def destroy(self):
         self.unmount()
-        if zfs_destroy(self.zfs, recursive=True) != 0:
-            raise ZCMError('Could not destroy ZFS ' + self.zfs)
+        if zfs_destroy(self.name, recursive=True) != 0:
+            raise ZCMError('Could not destroy ZFS ' + self.name)
         try:
             self.path.rmdir()
         except OSError as e:

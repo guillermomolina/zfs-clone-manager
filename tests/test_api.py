@@ -48,7 +48,7 @@ class TestAPI(unittest.TestCase):
             self.fail('Instantiation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
-        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000001')
         self.assertEqual(len(manager.older_clones), 0)
@@ -87,7 +87,7 @@ class TestAPI(unittest.TestCase):
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
-        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000002')
         self.assertEqual(len(manager.older_clones), 0)
@@ -148,7 +148,7 @@ class TestAPI(unittest.TestCase):
             manager.remove('00000001')
 
         self.assertEqual(manager.path, Path(directory))
-        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[1])
         self.assertEqual(manager.next_id, '00000002')
         self.assertEqual(len(manager.older_clones), 1)
@@ -205,7 +205,7 @@ class TestAPI(unittest.TestCase):
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
-        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000001')
         self.assertEqual(len(manager.older_clones), 0)
@@ -258,7 +258,7 @@ class TestAPI(unittest.TestCase):
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
-        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000002')
         self.assertEqual(len(manager.older_clones), 0)
@@ -307,7 +307,7 @@ class TestAPI(unittest.TestCase):
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
-        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000003')
         self.assertEqual(len(manager.older_clones), 0)
@@ -386,7 +386,7 @@ class TestAPI(unittest.TestCase):
             manager.remove('00000001')
 
         self.assertEqual(manager.path, Path(directory))
-        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[1])
         self.assertEqual(manager.next_id, '00000003')
         self.assertEqual(len(manager.older_clones), 1)
@@ -465,7 +465,7 @@ class TestAPI(unittest.TestCase):
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
-        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[1])
         self.assertEqual(manager.next_id, '00000002')
         self.assertEqual(len(manager.older_clones), 1)
@@ -536,7 +536,7 @@ class TestAPI(unittest.TestCase):
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
-        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000003')
         self.assertEqual(len(manager.older_clones), 0)
@@ -603,7 +603,7 @@ class TestAPI(unittest.TestCase):
             manager.clone(max_total=6)
 
         self.assertEqual(manager.path, Path(directory))
-        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000006')
         self.assertEqual(len(manager.older_clones), 0)
@@ -632,7 +632,7 @@ class TestAPI(unittest.TestCase):
             self.fail('Creation should not raise exceptions')
 
         self.assertEqual(manager.path, Path(directory))
-        self.assertEqual(manager.zfs, zfs)
+        self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[2])
         self.assertEqual(manager.next_id, '00000005')
         self.assertEqual(len(manager.older_clones), 2)

@@ -40,7 +40,7 @@ class Information:
         if options.parseable:
             data = {
                 'path': manager.path,
-                'zfs': manager.zfs,
+                'zfs': manager.name,
                 'size': format_bytes(manager.used),
                 'total': len(manager.clones),
                 'older': len(manager.older_clones),
@@ -54,7 +54,7 @@ class Information:
         else:
             data = {
                 'Path': manager.path,
-                'Root ZFS': manager.zfs,
+                'Root ZFS': manager.name,
                 'Root ZFS size': format_bytes(manager.used),
                 'Total clone count': len(manager.clones),
                 'Older clone count': len(manager.older_clones),

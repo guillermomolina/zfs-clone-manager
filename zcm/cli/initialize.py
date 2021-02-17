@@ -32,7 +32,10 @@ class Initialize:
                                               description='Init ZCM on specified ZFS',
                                               help='Init ZCM on specified ZFS')
         parser.add_argument('zfs',
-                            help='root ZFS')
+                            metavar='filesystem',
+                            help='root ZFS filesystem')
+        parser.add_argument('path',
+                            help='root path')
 
     def __init__(self, options):
         Manager.initialize_zfs(options.zfs, options.path)
