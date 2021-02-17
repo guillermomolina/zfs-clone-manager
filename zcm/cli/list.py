@@ -13,8 +13,10 @@
 # limitations under the License.
 
 import argparse
+from datetime import datetime
 
 from zcm.api import Manager
+from zcm.lib.print import format_bytes, print_table
 
 
 class List:
@@ -34,4 +36,14 @@ class List:
 
     def __init__(self, options):
         manager = Manager(options.path)
-        manager.print(truncate=(not options.no_trunc))
+        table = []
+        for clone in manager.clones:
+            table.append({
+                'a': '*' if manager.active == clone else ' ',
+                'id': clone['id'],
+                'mountpoint': clone['mountpoint'],
+                'origin': clone['origin_id'] if clone['origin_id'] else '',
+                'date': datetime.fromtimestamp(clone['creation']),
+                'size': format_bytes(clone['used'])
+            })
+        print_table(table, truncate=(not options.no_trunc))

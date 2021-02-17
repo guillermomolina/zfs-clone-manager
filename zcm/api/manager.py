@@ -17,7 +17,6 @@ from datetime import datetime
 from pathlib import Path
 
 from zcm.exceptions import ZCMError, ZCMException
-from zcm.lib.print import format_bytes, print_table
 from zcm.lib.zfs import (zfs_clone, zfs_create, zfs_destroy, zfs_exists,
                          zfs_get, zfs_inherit, zfs_is_filesystem, zfs_list,
                          zfs_promote, zfs_rename, zfs_set, zfs_snapshot)
@@ -228,19 +227,6 @@ class Manager:
             zfs_destroy('%s@%s' % (promoted['name'], promoted['id']))
         log.info('Removed clone ' + clone['id'])
         self.load()
-
-    def print(self, truncate=True):
-        table = []
-        for clone in self.clones:
-            table.append({
-                'a': '*' if self.active == clone else ' ',
-                'id': clone['id'],
-                'mountpoint': clone['mountpoint'],
-                'origin': clone['origin_id'] if clone['origin_id'] else '',
-                'date': datetime.fromtimestamp(clone['creation']),
-                'size': format_bytes(clone['used'])
-            })
-        print_table(table, truncate=truncate)
 
     def destroy(self):
         self.unmount()
