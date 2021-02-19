@@ -72,8 +72,12 @@ def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursi
             if not zfs_is_filesystem(zfs_path):
                 if is_zpool:
                     return None
-                if zfs('create', [zfs_path], ['mountpoint=none']) != 0:
+                if zfs('create', [zfs_path]) != 0:
                     return None
+                # For watever reason can not set mountpoint at creation time
+                # We set this afterwards
+                zfs_set(zfs_path, mountpoint=None)
+                
             is_zpool = False
 
     # Just debugging, don't fail if already created
@@ -81,18 +85,20 @@ def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursi
     #    print('WARNING: Deleting filesystem (%s) ' % filesystem)
 
     options = []
-    if mountpoint is not None:
-        options.append('mountpoint=' + str(mountpoint))
     if compression is not None:
         options.append('compression=' + compression)
     if zcm_path is not None:
         options.append('zfs_clone_manager:path=' + str(zcm_path))
-    if zcm_active is not None:
-        option = 'zfs_clone_manager:active=' + ('on' if zcm_active else 'off')
-        options.append(option)
     if len(options) == 0:
         options = None
     if zfs('create', [filesystem], options) == 0:
+        # For watever reason can not set this properties at creation time
+        # We set them afterwards
+        if mountpoint is not None:
+            zfs_set(filesystem, mountpoint=mountpoint)
+        if zcm_active is not None:
+            zfs_set(filesystem, zcm_active=zcm_active)
+
         return filesystem
     return None
 
