@@ -1,4 +1,4 @@
-# Todo list for ZFS Clone Manager
+# Todo list for ZFS Manager Manager
 
 
 - Add --max-* and --auto-remove information in README.md

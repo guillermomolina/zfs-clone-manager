@@ -1,4 +1,4 @@
-# Change log for ZFS Clone Manager
+# Change log for ZFS Manager Manager
 
 ## 2021-XX-XX: Version 3.0.0
 
@@ -7,6 +7,7 @@
 - Added zfs_clone_manager:path and zfs_clone_manager:active ZFS properties handling
 - Renamed zfs property to name in Manager
 - Better handling of on/off properties in zfs
+- Added Clone class to use it instead of a dict
 
 
 ## 2021-02-17: Version 2.2.0
@@ -17,6 +18,8 @@
 - Added --max-total to activate command
 - Moved print from Manager to CLI
 - Added parseable output to information command
+- Added Clone class for use instead of dict
+- Renamed instance properties to clone in Manager
 
 
 ## 2021-02-16: Version 2.1.0
@@ -26,7 +29,7 @@
 
 ## 2021-02-16: Version 2.0.0
 
-- Renamed project to ZFS Clone Manager
+- Renamed project to ZFS Manager Manager
 - Renamed CLI tool to zcm
 
 
@@ -35,7 +38,7 @@
 - Added quiet mode
 - Added info command
 - Added zfs size info
-- Renamed Manager.instances to Manager.clones
+- Renamed Manager.clones to Manager.clones
 - Added older and newer lists
 - Added --max-newer and --max-total options to clone command
 

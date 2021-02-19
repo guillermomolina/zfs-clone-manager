@@ -16,6 +16,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
+from zcm.api.clone import Clone
 from zcm.exceptions import ZCMError, ZCMException
 from zcm.lib.zfs import (zfs_clone, zfs_create, zfs_destroy, zfs_exists,
                          zfs_get, zfs_inherit, zfs_is_filesystem, zfs_list,
@@ -52,14 +53,17 @@ class Manager:
         self.clones = []
         self.older_clones = []
         self.newer_clones = []
-        self.active = None
+        self.active_clone = None
         self.next_id = None
+        self.size = None
         self.load()
 
     @staticmethod
     def get_managers():
         zfs_list_output = zfs_list(properties=[
                                    'zfs_clone_manager:path', 'zfs_clone_manager:active'], recursive=True)
+        for zfs in zfs_list_output:
+            print(zfs)
         return [Manager(zfs['zfs_clone_manager:path']) for zfs in zfs_list_output if zfs['zfs_clone_manager:path']
                 is not None and zfs['zfs_clone_manager:active'] is None]
 
@@ -80,8 +84,9 @@ class Manager:
         self.clones = []
         self.older_clones = []
         self.newer_clones = []
-        self.active = None
+        self.active_clone = None
         self.next_id = None
+        self.size = None
         if self.path.is_dir():
             self.name = get_zfs_for_path(self.path)
             last_id = 0
@@ -91,20 +96,21 @@ class Manager:
                 if zfs['name'] == self.name:
                     self.used = zfs['used']
                 else:
-                    zfs['id'] = zfs['name'].split('/')[-1]
-                    last_id = max(last_id, int(zfs['id'], base=16))
-                    zfs['origin_id'] = snapshot_to_origin_id(zfs['origin'])
+                    id = zfs['name'].split('/')[-1]
+                    last_id = max(last_id, int(id, base=16))
+                    origin_id = snapshot_to_origin_id(zfs['origin'])
+                    clone = Clone(id, zfs['name'], zfs['origin'], origin_id, zfs['mountpoint'], zfs['creation'], zfs['used'])
                     if zfs['mountpoint'] == self.path:
-                        self.active = zfs
+                        self.active = clone
                     else:
                         if self.active:
-                            self.newer_clones.append(zfs)
+                            self.newer_clones.append(clone)
                         else:
-                            self.older_clones.append(zfs)
-                    self.clones.append(zfs)
+                            self.older_clones.append(clone)
+                    self.clones.append(clone)
             self.next_id = format(last_id + 1, '08x')
 
-    def clone(self, max_newer=None, max_total=None, auto_remove=False):
+    def create(self, max_newer=None, max_total=None, auto_remove=False):
         if not self.active:
             raise ZCMError('There is no active clone, activate one first')
         if not auto_remove and max_newer is not None and len(self.newer_clones) >= max_newer:
@@ -113,37 +119,32 @@ class Manager:
         if not auto_remove and max_total is not None and len(self.clones) >= max_total:
             raise ZCMException(
                 'There are already %d clones, can not create another' % len(self.clones))
-        snapshot = zfs_snapshot(self.next_id, self.active['name'])
-        zfs = zfs_clone(self.name + '/' + self.next_id, snapshot)
-        clone = {
-            'id': self.next_id,
-            'name': zfs,
-            'origin': snapshot,
-            'mountpoint': zfs_get(zfs, 'mountpoint')
-        }
-        self.clones.append(clone)
-        log.info('Created clone ' + clone['id'])
+        snapshot = zfs_snapshot(self.next_id, self.active.name)
+        id = self.next_id
+        zfs = zfs_clone(self.name + '/' + id, snapshot)
         self.load()
+        clone = self.get_clone(id)
+        log.info('Created clone ' + clone.id)
         self.auto_remove(max_newer=max_newer, max_total=max_total)
         return clone
 
     def auto_remove(self, max_newer=None, max_older=None, max_total=None):
         while max_older is not None and len(self.older_clones) > max_older:
-            self.remove(self.older_clones[0]['id'])
+            self.remove(self.older_clones[0].id)
         while max_newer is not None and len(self.newer_clones) > max_newer:
-            self.remove(self.newer_clones[0]['id'])
+            self.remove(self.newer_clones[0].id)
         while max_total is not None and len(self.clones) > max_total:
             if self.older_clones:
-                self.remove(self.older_clones[0]['id'])
+                self.remove(self.older_clones[0].id)
             elif self.newer_clones:
-                self.remove(self.newer_clones[0]['id'])
+                self.remove(self.newer_clones[0].id)
             else:
                 raise ZCMError(
                     'There are no more clones to remove in order to satisfy max limit of ' + max_total)
 
-    def get_instance(self, id):
+    def get_clone(self, id):
         for clone in self.clones:
-            if clone['id'] == id:
+            if clone.id == id:
                 return clone
         raise ZCMError('There is no clone with id ' + id)
 
@@ -174,9 +175,9 @@ class Manager:
                 zfs_set(clone['name'], mounted=True)
 
     def activate(self, id, max_newer=None, max_older=None, max_total=None, auto_remove=False):
-        active = self.get_instance(id)
+        active = self.get_clone(id)
         if active == self.active:
-            raise ZCMException('Clone %s already active' % id)
+            raise ZCMException('Manager %s already active' % id)
         if not auto_remove and (max_newer is not None or max_older is not None):
             newer_count = 0
             older_count = 0
@@ -211,29 +212,29 @@ class Manager:
                          max_older=max_older, max_total=max_total)
         return active
 
-    def find_clones(self, id):
+    def find_clones_with_origin(self, id):
         clones = []
         for clone in self.clones:
-            if clone['origin_id'] == id:
+            if clone.origin_id == id:
                 clones.append(clone)
         return clones
 
     def remove(self, id):
-        clone = self.get_instance(id)
+        clone = self.get_clone(id)
         if clone == self.active:
             raise ZCMError(
-                'Clone with id %s is active, can not remove' % id)
-        clones = self.find_clones(id)
+                'Manager with id %s is active, can not remove' % id)
+        clones = self.find_clones_with_origin(id)
         promoted = None
         if clones:
             promoted = clones[-1]
             zfs_promote(promoted['name'])
         zfs_destroy(clone['name'])
-        if clone['origin']:
-            zfs_destroy(clone['origin'])
+        if clone.origin:
+            zfs_destroy(clone.origin)
         if promoted:
-            zfs_destroy('%s@%s' % (promoted['name'], promoted['id']))
-        log.info('Removed clone ' + clone['id'])
+            zfs_destroy('%s@%s' % (promoted['name'], promoted.id))
+        log.info('Removed clone ' + clone.id)
         self.load()
 
     def destroy(self):

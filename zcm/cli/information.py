@@ -43,11 +43,11 @@ class Information:
                 'zfs': manager.name,
                 'size': format_bytes(manager.used),
                 'total': len(manager.clones),
-                'older': len(manager.older_clones),
-                'newer': len(manager.newer_clones),
-                'oldest_id': manager.clones[0]['id'],
-                'active_id': manager.active['id'],
-                'newest_id': manager.clones[-1]['id'],
+                'older': len(manager.older_instances),
+                'newer': len(manager.newer_instances),
+                'oldest_id': manager.clones[0].id,
+                'active_id': manager.active.id,
+                'newest_id': manager.clones[-1].id,
                 'next_id': manager.next_id
             }
             print_table([data])
@@ -57,11 +57,11 @@ class Information:
                 'Root ZFS': manager.name,
                 'Root ZFS size': format_bytes(manager.used),
                 'Total clone count': len(manager.clones),
-                'Older clone count': len(manager.older_clones),
-                'Newer clone count': len(manager.newer_clones),
-                'Oldest clone ID': manager.clones[0]['id'],
-                'Active clone ID': manager.active['id'],
-                'Newest clone ID': manager.clones[-1]['id'],
+                'Older clone count': len(manager.older_instances),
+                'Newer clone count': len(manager.newer_instances),
+                'Oldest clone ID': manager.clones[0].id,
+                'Active clone ID': manager.active.id,
+                'Newest clone ID': manager.clones[-1].id,
                 'Next clone ID': manager.next_id
             }
             print_info(data)

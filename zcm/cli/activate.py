@@ -49,7 +49,7 @@ class Activate:
 
     def __init__(self, options):
         manager = Manager(options.path)
-        clone = manager.activate(options.id, options.max_newer,
+        manager.activate(options.id, options.max_newer,
                                  options.max_older, options.max_total, options.auto_remove)
         if not options.quiet:
-            print('Activated clone ' + clone['id'])
+            print('Activated clone ' + manager.id)

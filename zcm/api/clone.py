@@ -12,4 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .manager import Manager
+import logging
+
+log = logging.getLogger(__name__)
+
+class Clone:
+    def __init__(self, id, name, origin, origin_id, mountpoint, creation, size):
+        self.id = id
+        self.name = name
+        self.origin = origin
+        self.origin_id = origin_id
+        self.mountpoint = mountpoint
+        self.creation = creation
+        self.size = size
+        

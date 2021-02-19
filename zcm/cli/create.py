@@ -19,33 +19,36 @@ from zcm.api.manager import Manager
 from zcm.lib.helpers import check_one_or_more
 
 
-class Clone:
-    name = 'clone'
+class Create:
+    name = 'create'
     aliases = []
 
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser(Clone.name,
+        parser = parent_subparsers.add_parser(Create.name,
                                               parents=[parent_parser],
-                                              aliases=Clone.aliases,
+                                              aliases=Create.aliases,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='Clone a new clone',
-                                              help='Clone a new clone')
+                                              description='Create a new instance',
+                                              help='Create a new instance')
         parser.add_argument('-m', '--max-newer',
                             type=check_one_or_more,
-                            help='Do not clone if there are <max-newer> newer clones')
+                            help='Do not create if there are <max-newer> newer clones')
         parser.add_argument('-t', '--max-total',
                             type=check_one_or_more,
-                            help='Do not clone if there are <max-total> clones')
+                            help='Do not create if there are <max-total> clones')
         parser.add_argument('-a', '--auto-remove',
                             action='store_true',
                             help='Remove clones if maximum limits excedeed')
+        parser.add_argument('path',
+                            metavar='filesystem|path',
+                            help='zfs filesystem or path of ZCM')
 
     def __init__(self, options):
         manager = Manager(options.path)
-        clone = manager.clone(
+        clone = manager.create(
             options.max_newer, options.max_total, options.auto_remove)
         if not options.quiet:
-            print('Created clone %s at path %s' %
-                  (clone['id'], clone['mountpoint']))
+            print('Created instance %s at path %s' %
+                  (clone.id, clone.mountpoint))

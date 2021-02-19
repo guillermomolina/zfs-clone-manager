@@ -15,7 +15,7 @@
 import argparse
 from datetime import datetime
 
-from zcm.api import Manager
+from zcm.api.manager import Manager
 from zcm.lib.print import format_bytes, print_table
 
 
@@ -47,10 +47,10 @@ class List:
                 table.append({
                     'name': manager.name,
                     'a': '*' if manager.active == clone else ' ',
-                    'id': clone['id'],
-                    'mountpoint': clone['mountpoint'],
-                    'origin': clone['origin_id'] if clone['origin_id'] else '',
-                    'date': datetime.fromtimestamp(clone['creation']),
-                    'size': format_bytes(clone['used'])
+                    'id': clone.id,
+                    'mountpoint': clone.mountpoint,
+                    'origin': clone.origin_id if clone.origin_id else '',
+                    'date': datetime.fromtimestamp(clone.creation),
+                    'size': format_bytes(clone.size)
                 })
         print_table(table, truncate=(not options.no_trunc))

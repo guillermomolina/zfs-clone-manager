@@ -1,14 +1,14 @@
-# ZFS Clone Manager
+# ZFS Manager Manager
 
 Tool to add version control and historic data of a directory with ZFS. The functionality is similar to Solaris beadm but generalized for any ZFS filesystem, not just ROOT and VAR.
 
 The suggested workflow is:
 1. Initialize (zcm init)
-2. Make changes in active
-3. Clone (zcm clone)
-4. Make changes in clone
-5. Activate clone (zcm activate)
-6. [Remove older clones (zcm rm)]
+2. Make changes in active instance
+3. Create instance (zcm create)
+4. Make changes in new instance
+5. Activate instance (zcm activate)
+6. [Remove older instances (zcm rm)]
 7. Go to step 2
 
 ## Usage
@@ -20,7 +20,7 @@ $ zcm -p /directory init rpool/directory
 ZCM initialized ZFS rpool/directory at path /directory
 ```
 
-"-p /directory" -> path of the filesystem (mountpoint of the active clone).
+"-p /directory" -> path of the filesystem (mountpoint of the active instance).
 
 "rpool/directory" -> root of the ZFS for clones and snapshots.
 
@@ -38,17 +38,17 @@ A  ID        MOUNTPOINT  ORIGIN  DATE
 
 ```bash
 $ cd /directory
-$ zcm clone
-Created clone 00000001 at path /directory/.clones/00000001
-$ zcm clone
-Created clone 00000002 at path /directory/.clones/00000002
+$ zcm create
+Created instance 00000001 at path /directory/.clones/00000001
+$ zcm create
+Created instance 00000002 at path /directory/.clones/00000002
 ```
 
-- Activate the previously created clone, mounting it at ZCM path 
+- Activate the previously created instance, mounting it at ZCM path 
 
 ```bash
 $ zcm -p /directory activate 00000002
-Activated clone 00000002
+Activated instance 00000002
 ```
 
 The activate command can not be executed from inside the path, therefore the parameter -p <path> is mandatory.  

@@ -41,7 +41,7 @@ class TestAPI(unittest.TestCase):
     def test_initialize(self):
         with self.assertRaises(ZCMError):
             Manager.initialize_zfs(zfs, directory)
-        manager = None
+        clone = None
         try:
             manager = Manager(directory)
         except ZCMError as e:
@@ -51,8 +51,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000001')
-        self.assertEqual(len(manager.older_clones), 0)
-        self.assertEqual(len(manager.newer_clones), 0)
+        self.assertEqual(len(manager.older_instances), 0)
+        self.assertEqual(len(manager.newer_instances), 0)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -64,25 +64,25 @@ class TestAPI(unittest.TestCase):
         id = '00000000'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory)
-        self.assertEqual(manager.clones[0]['id'], id)
-        self.assertEqual(manager.clones[0]['name'], filesystem)
-        self.assertIsNone(manager.clones[0]['origin'])
-        self.assertIsNone(manager.clones[0]['origin_id'])
-        self.assertEqual(manager.clones[0]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[0]['creation'], int)
+        self.assertEqual(manager.clones[0].id, id)
+        self.assertEqual(manager.clones[0].name, filesystem)
+        self.assertIsNone(manager.clones[0].origin)
+        self.assertIsNone(manager.clones[0].origin_id)
+        self.assertEqual(manager.clones[0].mountpoint, path)
+        self.assertIsInstance(manager.clones[0].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
         self.assertTrue(path.is_dir())
 
     def test_create_1(self):
-        manager = None
+        clone = None
         try:
             manager = Manager(directory)
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.clone()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
 
@@ -90,8 +90,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000002')
-        self.assertEqual(len(manager.older_clones), 0)
-        self.assertEqual(len(manager.newer_clones), 1)
+        self.assertEqual(len(manager.older_instances), 0)
+        self.assertEqual(len(manager.newer_instances), 1)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -103,12 +103,12 @@ class TestAPI(unittest.TestCase):
         id = '00000000'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory)
-        self.assertEqual(manager.clones[0]['id'], id)
-        self.assertEqual(manager.clones[0]['name'], filesystem)
-        self.assertIsNone(manager.clones[0]['origin'])
-        self.assertIsNone(manager.clones[0]['origin_id'])
-        self.assertEqual(manager.clones[0]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[0]['creation'], int)
+        self.assertEqual(manager.clones[0].id, id)
+        self.assertEqual(manager.clones[0].name, filesystem)
+        self.assertIsNone(manager.clones[0].origin)
+        self.assertIsNone(manager.clones[0].origin_id)
+        self.assertEqual(manager.clones[0].mountpoint, path)
+        self.assertIsInstance(manager.clones[0].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -117,25 +117,25 @@ class TestAPI(unittest.TestCase):
         id = '00000001'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory, '.clones', id)
-        self.assertEqual(manager.clones[1]['id'], id)
-        self.assertEqual(manager.clones[1]['name'], filesystem)
-        self.assertEqual(manager.clones[1]['origin'], '%s/%s@%s' % (zfs, '00000000', id))
-        self.assertEqual(manager.clones[1]['origin_id'], '00000000')
-        self.assertEqual(manager.clones[1]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[1]['creation'], int)
+        self.assertEqual(manager.clones[1].id, id)
+        self.assertEqual(manager.clones[1].name, filesystem)
+        self.assertEqual(manager.clones[1].origin, '%s/%s@%s' % (zfs, '00000000', id))
+        self.assertEqual(manager.clones[1].origin_id, '00000000')
+        self.assertEqual(manager.clones[1].mountpoint, path)
+        self.assertIsInstance(manager.clones[1].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
         self.assertTrue(path.is_dir())
 
     def test_activate_1(self):
-        manager = None
+        clone = None
         try:
             manager = Manager(directory)
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.clone()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -151,8 +151,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[1])
         self.assertEqual(manager.next_id, '00000002')
-        self.assertEqual(len(manager.older_clones), 1)
-        self.assertEqual(len(manager.newer_clones), 0)
+        self.assertEqual(len(manager.older_instances), 1)
+        self.assertEqual(len(manager.newer_instances), 0)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -164,12 +164,12 @@ class TestAPI(unittest.TestCase):
         id = '00000000'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory, '.clones', id)
-        self.assertEqual(manager.clones[0]['id'], id)
-        self.assertEqual(manager.clones[0]['name'], filesystem)
-        self.assertIsNone(manager.clones[0]['origin'])
-        self.assertIsNone(manager.clones[0]['origin_id'])
-        self.assertEqual(manager.clones[0]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[0]['creation'], int)
+        self.assertEqual(manager.clones[0].id, id)
+        self.assertEqual(manager.clones[0].name, filesystem)
+        self.assertIsNone(manager.clones[0].origin)
+        self.assertIsNone(manager.clones[0].origin_id)
+        self.assertEqual(manager.clones[0].mountpoint, path)
+        self.assertIsInstance(manager.clones[0].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -178,25 +178,25 @@ class TestAPI(unittest.TestCase):
         id = '00000001'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory)
-        self.assertEqual(manager.clones[1]['id'], id)
-        self.assertEqual(manager.clones[1]['name'], filesystem)
-        self.assertEqual(manager.clones[1]['origin'], '%s/%s@%s' % (zfs, '00000000', id))
-        self.assertEqual(manager.clones[1]['origin_id'], '00000000')
-        self.assertEqual(manager.clones[1]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[1]['creation'], int)
+        self.assertEqual(manager.clones[1].id, id)
+        self.assertEqual(manager.clones[1].name, filesystem)
+        self.assertEqual(manager.clones[1].origin, '%s/%s@%s' % (zfs, '00000000', id))
+        self.assertEqual(manager.clones[1].origin_id, '00000000')
+        self.assertEqual(manager.clones[1].mountpoint, path)
+        self.assertIsInstance(manager.clones[1].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
         self.assertTrue(path.is_dir())
 
     def test_remove_newer_1(self):
-        manager = None
+        clone = None
         try:
             manager = Manager(directory)
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.clone()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -208,8 +208,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000001')
-        self.assertEqual(len(manager.older_clones), 0)
-        self.assertEqual(len(manager.newer_clones), 0)
+        self.assertEqual(len(manager.older_instances), 0)
+        self.assertEqual(len(manager.newer_instances), 0)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -221,12 +221,12 @@ class TestAPI(unittest.TestCase):
         id = '00000000'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory)
-        self.assertEqual(manager.clones[0]['id'], id)
-        self.assertEqual(manager.clones[0]['name'], filesystem)
-        self.assertIsNone(manager.clones[0]['origin'])
-        self.assertIsNone(manager.clones[0]['origin_id'])
-        self.assertEqual(manager.clones[0]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[0]['creation'], int)
+        self.assertEqual(manager.clones[0].id, id)
+        self.assertEqual(manager.clones[0].name, filesystem)
+        self.assertIsNone(manager.clones[0].origin)
+        self.assertIsNone(manager.clones[0].origin_id)
+        self.assertEqual(manager.clones[0].mountpoint, path)
+        self.assertIsInstance(manager.clones[0].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -239,13 +239,13 @@ class TestAPI(unittest.TestCase):
         self.assertFalse(path.exists())
 
     def test_remove_older_1(self):
-        manager = None
+        clone = None
         try:
             manager = Manager(directory)
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.clone()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -261,8 +261,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000002')
-        self.assertEqual(len(manager.older_clones), 0)
-        self.assertEqual(len(manager.newer_clones), 0)
+        self.assertEqual(len(manager.older_instances), 0)
+        self.assertEqual(len(manager.newer_instances), 0)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -280,29 +280,29 @@ class TestAPI(unittest.TestCase):
         id = '00000001'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory)
-        self.assertEqual(manager.clones[0]['id'], id)
-        self.assertEqual(manager.clones[0]['name'], filesystem)
-        self.assertIsNone(manager.clones[0]['origin'])
-        self.assertIsNone(manager.clones[0]['origin_id'])
-        self.assertEqual(manager.clones[0]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[0]['creation'], int)
+        self.assertEqual(manager.clones[0].id, id)
+        self.assertEqual(manager.clones[0].name, filesystem)
+        self.assertIsNone(manager.clones[0].origin)
+        self.assertIsNone(manager.clones[0].origin_id)
+        self.assertEqual(manager.clones[0].mountpoint, path)
+        self.assertIsInstance(manager.clones[0].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
         self.assertTrue(path.is_dir())
 
     def test_create_2(self):
-        manager = None
+        clone = None
         try:
             manager = Manager(directory)
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.clone()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
-            manager.clone()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
 
@@ -310,8 +310,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000003')
-        self.assertEqual(len(manager.older_clones), 0)
-        self.assertEqual(len(manager.newer_clones), 2)
+        self.assertEqual(len(manager.older_instances), 0)
+        self.assertEqual(len(manager.newer_instances), 2)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -323,12 +323,12 @@ class TestAPI(unittest.TestCase):
         id = '00000000'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory)
-        self.assertEqual(manager.clones[0]['id'], id)
-        self.assertEqual(manager.clones[0]['name'], filesystem)
-        self.assertIsNone(manager.clones[0]['origin'])
-        self.assertIsNone(manager.clones[0]['origin_id'])
-        self.assertEqual(manager.clones[0]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[0]['creation'], int)
+        self.assertEqual(manager.clones[0].id, id)
+        self.assertEqual(manager.clones[0].name, filesystem)
+        self.assertIsNone(manager.clones[0].origin)
+        self.assertIsNone(manager.clones[0].origin_id)
+        self.assertEqual(manager.clones[0].mountpoint, path)
+        self.assertIsInstance(manager.clones[0].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -337,12 +337,12 @@ class TestAPI(unittest.TestCase):
         id = '00000001'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory, '.clones', id)
-        self.assertEqual(manager.clones[1]['id'], id)
-        self.assertEqual(manager.clones[1]['name'], filesystem)
-        self.assertEqual(manager.clones[1]['origin'], '%s/%s@%s' % (zfs, '00000000', id))
-        self.assertEqual(manager.clones[1]['origin_id'], '00000000')
-        self.assertEqual(manager.clones[1]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[1]['creation'], int)
+        self.assertEqual(manager.clones[1].id, id)
+        self.assertEqual(manager.clones[1].name, filesystem)
+        self.assertEqual(manager.clones[1].origin, '%s/%s@%s' % (zfs, '00000000', id))
+        self.assertEqual(manager.clones[1].origin_id, '00000000')
+        self.assertEqual(manager.clones[1].mountpoint, path)
+        self.assertIsInstance(manager.clones[1].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -351,29 +351,29 @@ class TestAPI(unittest.TestCase):
         id = '00000002'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory, '.clones', id)
-        self.assertEqual(manager.clones[2]['id'], id)
-        self.assertEqual(manager.clones[2]['name'], filesystem)
-        self.assertEqual(manager.clones[2]['origin'], '%s/%s@%s' % (zfs, '00000000', id))
-        self.assertEqual(manager.clones[2]['origin_id'], '00000000')
-        self.assertEqual(manager.clones[2]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[1]['creation'], int)
+        self.assertEqual(manager.clones[2].id, id)
+        self.assertEqual(manager.clones[2].name, filesystem)
+        self.assertEqual(manager.clones[2].origin, '%s/%s@%s' % (zfs, '00000000', id))
+        self.assertEqual(manager.clones[2].origin_id, '00000000')
+        self.assertEqual(manager.clones[2].mountpoint, path)
+        self.assertIsInstance(manager.clones[1].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
         self.assertTrue(path.is_dir())
 
     def test_activate_2(self):
-        manager = None
+        clone = None
         try:
             manager = Manager(directory)
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.clone()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
-            manager.clone()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -389,8 +389,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[1])
         self.assertEqual(manager.next_id, '00000003')
-        self.assertEqual(len(manager.older_clones), 1)
-        self.assertEqual(len(manager.newer_clones), 1)
+        self.assertEqual(len(manager.older_instances), 1)
+        self.assertEqual(len(manager.newer_instances), 1)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -402,12 +402,12 @@ class TestAPI(unittest.TestCase):
         id = '00000000'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory, '.clones', id)
-        self.assertEqual(manager.clones[0]['id'], id)
-        self.assertEqual(manager.clones[0]['name'], filesystem)
-        self.assertIsNone(manager.clones[0]['origin'])
-        self.assertIsNone(manager.clones[0]['origin_id'])
-        self.assertEqual(manager.clones[0]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[0]['creation'], int)
+        self.assertEqual(manager.clones[0].id, id)
+        self.assertEqual(manager.clones[0].name, filesystem)
+        self.assertIsNone(manager.clones[0].origin)
+        self.assertIsNone(manager.clones[0].origin_id)
+        self.assertEqual(manager.clones[0].mountpoint, path)
+        self.assertIsInstance(manager.clones[0].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -416,12 +416,12 @@ class TestAPI(unittest.TestCase):
         id = '00000001'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory)
-        self.assertEqual(manager.clones[1]['id'], id)
-        self.assertEqual(manager.clones[1]['name'], filesystem)
-        self.assertEqual(manager.clones[1]['origin'], '%s/%s@%s' % (zfs, '00000000', id))
-        self.assertEqual(manager.clones[1]['origin_id'], '00000000')
-        self.assertEqual(manager.clones[1]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[1]['creation'], int)
+        self.assertEqual(manager.clones[1].id, id)
+        self.assertEqual(manager.clones[1].name, filesystem)
+        self.assertEqual(manager.clones[1].origin, '%s/%s@%s' % (zfs, '00000000', id))
+        self.assertEqual(manager.clones[1].origin_id, '00000000')
+        self.assertEqual(manager.clones[1].mountpoint, path)
+        self.assertIsInstance(manager.clones[1].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -430,29 +430,29 @@ class TestAPI(unittest.TestCase):
         id = '00000002'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory, '.clones', id)
-        self.assertEqual(manager.clones[2]['id'], id)
-        self.assertEqual(manager.clones[2]['name'], filesystem)
-        self.assertEqual(manager.clones[2]['origin'], '%s/%s@%s' % (zfs, '00000000', id))
-        self.assertEqual(manager.clones[2]['origin_id'], '00000000')
-        self.assertEqual(manager.clones[2]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[2]['creation'], int)
+        self.assertEqual(manager.clones[2].id, id)
+        self.assertEqual(manager.clones[2].name, filesystem)
+        self.assertEqual(manager.clones[2].origin, '%s/%s@%s' % (zfs, '00000000', id))
+        self.assertEqual(manager.clones[2].origin_id, '00000000')
+        self.assertEqual(manager.clones[2].mountpoint, path)
+        self.assertIsInstance(manager.clones[2].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
         self.assertTrue(path.is_dir())
 
     def test_remove_newer_2(self):
-        manager = None
+        clone = None
         try:
             manager = Manager(directory)
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.clone()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
-            manager.clone()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -468,8 +468,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[1])
         self.assertEqual(manager.next_id, '00000002')
-        self.assertEqual(len(manager.older_clones), 1)
-        self.assertEqual(len(manager.newer_clones), 0)
+        self.assertEqual(len(manager.older_instances), 1)
+        self.assertEqual(len(manager.newer_instances), 0)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -481,12 +481,12 @@ class TestAPI(unittest.TestCase):
         id = '00000000'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory, '.clones', id)
-        self.assertEqual(manager.clones[0]['id'], id)
-        self.assertEqual(manager.clones[0]['name'], filesystem)
-        self.assertIsNone(manager.clones[0]['origin'])
-        self.assertIsNone(manager.clones[0]['origin_id'])
-        self.assertEqual(manager.clones[0]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[0]['creation'], int)
+        self.assertEqual(manager.clones[0].id, id)
+        self.assertEqual(manager.clones[0].name, filesystem)
+        self.assertIsNone(manager.clones[0].origin)
+        self.assertIsNone(manager.clones[0].origin_id)
+        self.assertEqual(manager.clones[0].mountpoint, path)
+        self.assertIsInstance(manager.clones[0].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -495,12 +495,12 @@ class TestAPI(unittest.TestCase):
         id = '00000001'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory)
-        self.assertEqual(manager.clones[1]['id'], id)
-        self.assertEqual(manager.clones[1]['name'], filesystem)
-        self.assertEqual(manager.clones[1]['origin'], '%s/%s@%s' % (zfs, '00000000', id))
-        self.assertEqual(manager.clones[1]['origin_id'], '00000000')
-        self.assertEqual(manager.clones[1]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[1]['creation'], int)
+        self.assertEqual(manager.clones[1].id, id)
+        self.assertEqual(manager.clones[1].name, filesystem)
+        self.assertEqual(manager.clones[1].origin, '%s/%s@%s' % (zfs, '00000000', id))
+        self.assertEqual(manager.clones[1].origin_id, '00000000')
+        self.assertEqual(manager.clones[1].mountpoint, path)
+        self.assertIsInstance(manager.clones[1].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -513,17 +513,17 @@ class TestAPI(unittest.TestCase):
         self.assertFalse(path.exists())
 
     def test_remove_older_2(self):
-        manager = None
+        clone = None
         try:
             manager = Manager(directory)
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.clone()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
-            manager.clone()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -539,8 +539,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000003')
-        self.assertEqual(len(manager.older_clones), 0)
-        self.assertEqual(len(manager.newer_clones), 1)
+        self.assertEqual(len(manager.older_instances), 0)
+        self.assertEqual(len(manager.newer_instances), 1)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -558,12 +558,12 @@ class TestAPI(unittest.TestCase):
         id = '00000001'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory)
-        self.assertEqual(manager.clones[0]['id'], id)
-        self.assertEqual(manager.clones[0]['name'], filesystem)
-        self.assertEqual(manager.clones[0]['origin'], '%s/%s@%s' % (zfs, '00000002', id))
-        self.assertEqual(manager.clones[0]['origin_id'], '00000002')
-        self.assertEqual(manager.clones[0]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[0]['creation'], int)
+        self.assertEqual(manager.clones[0].id, id)
+        self.assertEqual(manager.clones[0].name, filesystem)
+        self.assertEqual(manager.clones[0].origin, '%s/%s@%s' % (zfs, '00000002', id))
+        self.assertEqual(manager.clones[0].origin_id, '00000002')
+        self.assertEqual(manager.clones[0].mountpoint, path)
+        self.assertIsInstance(manager.clones[0].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -572,54 +572,54 @@ class TestAPI(unittest.TestCase):
         id = '00000002'
         filesystem = '%s/%s' % (zfs, id)
         path = Path(directory, '.clones', id)
-        self.assertEqual(manager.clones[1]['id'], id)
-        self.assertEqual(manager.clones[1]['name'], filesystem)
-        self.assertIsNone(manager.clones[1]['origin'])
-        self.assertIsNone(manager.clones[1]['origin_id'])
-        self.assertEqual(manager.clones[1]['mountpoint'], path)
-        self.assertIsInstance(manager.clones[1]['creation'], int)
+        self.assertEqual(manager.clones[1].id, id)
+        self.assertEqual(manager.clones[1].name, filesystem)
+        self.assertIsNone(manager.clones[1].origin)
+        self.assertIsNone(manager.clones[1].origin_id)
+        self.assertEqual(manager.clones[1].mountpoint, path)
+        self.assertIsInstance(manager.clones[1].creation, int)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
         self.assertTrue(path.is_dir())
 
     def test_clone_options(self):
-        manager = None
+        clone = None
         try:
             manager = Manager(directory)
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.clone()
-            manager.clone()
-            manager.clone()
-            manager.clone()
-            manager.clone()
+            manager.create()
+            manager.create()
+            manager.create()
+            manager.create()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         with self.assertRaises(ZCMException):
-            manager.clone(max_newer=5)
+            manager.create(max_newer=5)
         with self.assertRaises(ZCMException):
-            manager.clone(max_total=6)
+            manager.create(max_total=6)
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[0])
         self.assertEqual(manager.next_id, '00000006')
-        self.assertEqual(len(manager.older_clones), 0)
-        self.assertEqual(len(manager.newer_clones), 5)
+        self.assertEqual(len(manager.older_instances), 0)
+        self.assertEqual(len(manager.newer_instances), 5)
 
     def test_activate_options(self):
-        manager = None
+        clone = None
         try:
             manager = Manager(directory)
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.clone()
-            manager.clone()
-            manager.clone()
-            manager.clone()
+            manager.create()
+            manager.create()
+            manager.create()
+            manager.create()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         with self.assertRaises(ZCMException):
@@ -635,8 +635,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.name, zfs)
         self.assertEqual(manager.active, manager.clones[2])
         self.assertEqual(manager.next_id, '00000005')
-        self.assertEqual(len(manager.older_clones), 2)
-        self.assertEqual(len(manager.newer_clones), 2)
+        self.assertEqual(len(manager.older_instances), 2)
+        self.assertEqual(len(manager.newer_instances), 2)
 
 
 if __name__ == '__main__':
