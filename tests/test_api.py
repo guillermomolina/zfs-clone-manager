@@ -17,7 +17,7 @@ from pathlib import Path
 
 from zcm.api.manager import Manager
 from zcm.exceptions import ZCMError, ZCMException
-from zcm.lib.zfs import zfs_exists, zfs_get, zfs_is_filesystem, zfs_is_snapshot
+from zcm.lib.zfs import zfs_exists, zfs_get, zfs_is_filesystem
 
 zfs = 'rpool/my/cool/zfs/directory'
 directory = '/my_cool_zfs_directory'
@@ -51,8 +51,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.zfs, zfs)
         self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000001')
-        self.assertEqual(len(manager.older_instances), 0)
-        self.assertEqual(len(manager.newer_instances), 0)
+        self.assertEqual(len(manager.older_clones), 0)
+        self.assertEqual(len(manager.newer_clones), 0)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -90,8 +90,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.zfs, zfs)
         self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000002')
-        self.assertEqual(len(manager.older_instances), 0)
-        self.assertEqual(len(manager.newer_instances), 1)
+        self.assertEqual(len(manager.older_clones), 0)
+        self.assertEqual(len(manager.newer_clones), 1)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -151,8 +151,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.zfs, zfs)
         self.assertEqual(manager.active_clone, manager.clones[1])
         self.assertEqual(manager.next_id, '00000002')
-        self.assertEqual(len(manager.older_instances), 1)
-        self.assertEqual(len(manager.newer_instances), 0)
+        self.assertEqual(len(manager.older_clones), 1)
+        self.assertEqual(len(manager.newer_clones), 0)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -208,8 +208,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.zfs, zfs)
         self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000001')
-        self.assertEqual(len(manager.older_instances), 0)
-        self.assertEqual(len(manager.newer_instances), 0)
+        self.assertEqual(len(manager.older_clones), 0)
+        self.assertEqual(len(manager.newer_clones), 0)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -261,8 +261,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.zfs, zfs)
         self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000002')
-        self.assertEqual(len(manager.older_instances), 0)
-        self.assertEqual(len(manager.newer_instances), 0)
+        self.assertEqual(len(manager.older_clones), 0)
+        self.assertEqual(len(manager.newer_clones), 0)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -310,8 +310,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.zfs, zfs)
         self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000003')
-        self.assertEqual(len(manager.older_instances), 0)
-        self.assertEqual(len(manager.newer_instances), 2)
+        self.assertEqual(len(manager.older_clones), 0)
+        self.assertEqual(len(manager.newer_clones), 2)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -389,8 +389,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.zfs, zfs)
         self.assertEqual(manager.active_clone, manager.clones[1])
         self.assertEqual(manager.next_id, '00000003')
-        self.assertEqual(len(manager.older_instances), 1)
-        self.assertEqual(len(manager.newer_instances), 1)
+        self.assertEqual(len(manager.older_clones), 1)
+        self.assertEqual(len(manager.newer_clones), 1)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -468,8 +468,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.zfs, zfs)
         self.assertEqual(manager.active_clone, manager.clones[1])
         self.assertEqual(manager.next_id, '00000002')
-        self.assertEqual(len(manager.older_instances), 1)
-        self.assertEqual(len(manager.newer_instances), 0)
+        self.assertEqual(len(manager.older_clones), 1)
+        self.assertEqual(len(manager.newer_clones), 0)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -539,8 +539,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.zfs, zfs)
         self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000003')
-        self.assertEqual(len(manager.older_instances), 0)
-        self.assertEqual(len(manager.newer_instances), 1)
+        self.assertEqual(len(manager.older_clones), 0)
+        self.assertEqual(len(manager.newer_clones), 1)
 
         filesystem = zfs
         path = Path(directory, '.clones')
@@ -606,8 +606,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.zfs, zfs)
         self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000006')
-        self.assertEqual(len(manager.older_instances), 0)
-        self.assertEqual(len(manager.newer_instances), 5)
+        self.assertEqual(len(manager.older_clones), 0)
+        self.assertEqual(len(manager.newer_clones), 5)
 
     def test_activate_options(self):
         clone = None
@@ -635,8 +635,8 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.zfs, zfs)
         self.assertEqual(manager.active_clone, manager.clones[2])
         self.assertEqual(manager.next_id, '00000005')
-        self.assertEqual(len(manager.older_instances), 2)
-        self.assertEqual(len(manager.newer_instances), 2)
+        self.assertEqual(len(manager.older_clones), 2)
+        self.assertEqual(len(manager.newer_clones), 2)
 
 
 if __name__ == '__main__':
