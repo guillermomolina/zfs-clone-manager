@@ -44,6 +44,9 @@ class Remove:
         parser.add_argument('--force',
                             help='Force remove clone without confirmation',
                             action='store_true')
+        parser.add_argument('path',
+                            metavar='filesystem|path',
+                            help='zfs filesystem or path of ZCM')
         parser.add_argument('id',
                             nargs='+',
                             help='ID of the clone to remove')
