@@ -19,21 +19,17 @@ from pathlib import Path
 from zcm.api.clone import Clone
 from zcm.exceptions import ZCMError, ZCMException
 from zcm.lib.zfs import (zfs_clone, zfs_create, zfs_destroy, zfs_exists,
-                         zfs_get, zfs_inherit, zfs_is_filesystem, zfs_list,
-                         zfs_promote, zfs_rename, zfs_set, zfs_snapshot)
+                         zfs_get, zfs_inherit, zfs_list, zfs_promote, zfs_set,
+                         zfs_snapshot)
 
 log = logging.getLogger(__name__)
 
-
-def get_zfs_for_path(path):
-    hidden_path = Path(path, '.clones')
-    zfs_list_output = zfs_list(
-        str(hidden_path), zfs_type='filesystem', properties=['name', 'mountpoint'])
-    if len(zfs_list_output) == 1 and zfs_list_output[0]['mountpoint'] == hidden_path:
-        zfs = zfs_list_output[0]['name']
-        return zfs
-    raise ZCMError('The path %s is invalid or uninitialized' % path)
-
+def get_zcm_for_path(path_str):
+    zfs_list_output = zfs_list(zfs_type='filesystem', properties=['name', 'zfs_clone_manager:path', 'zfs_clone_manager:active'])
+    for zfs in zfs_list_output:
+        if str(zfs['zfs_clone_manager:path']) == path_str and zfs['zfs_clone_manager:active'] is None:
+            return zfs['name']
+    return None
 
 def snapshot_to_origin_id(snapshot):
     # snapshot -> rpool/zfsa/zfsb/00000004@00000005
@@ -47,22 +43,26 @@ def snapshot_to_origin_id(snapshot):
 
 
 class Manager:
-    def __init__(self, path):
-        self.path = Path(path)
+    def __init__(self, zfs_or_path):
         self.name = None
+        self.path = None
         self.clones = []
         self.older_clones = []
         self.newer_clones = []
         self.active_clone = None
         self.next_id = None
         self.size = None
+        zfs = get_zcm_for_path(zfs_or_path)
+        self.name = zfs_or_path if zfs is None else zfs
+        print(self.name)
+        self.validate()
         self.load()
 
     @staticmethod
     def get_managers():
-        zfs_list_output = zfs_list(properties=[
+        zfs_list_output = zfs_list(properties=['name',
                                    'zfs_clone_manager:path', 'zfs_clone_manager:active'], recursive=True)
-        return [Manager(zfs['zfs_clone_manager:path']) for zfs in zfs_list_output if zfs['zfs_clone_manager:path']
+        return [Manager(zfs['name']) for zfs in zfs_list_output if zfs['zfs_clone_manager:path']
                 is not None and zfs['zfs_clone_manager:active'] is None]
 
     @staticmethod
@@ -78,6 +78,17 @@ class Manager:
         zfs_set(zfs_str, mountpoint=Path(path, '.clones'), zcm_path=path_str)
         log.info('Created ZCM %s at path %s' % (zfs_str, path_str))
 
+    def validate(self):
+        if not isinstance(self.name, str):
+            raise ZCMError('The name property is invalid: ' % str(self.name))
+        zfs_list_output = zfs_list(self.name, zfs_type='filesystem', properties=['zfs_clone_manager:path', 'mountpoint'])
+        if len(zfs_list_output) != 1:
+            raise ZCMError('ZFS %s does not exist or is not ZCM valid: ' % self.name)
+        self.path = zfs_list_output[0]['zfs_clone_manager:path']
+        if not isinstance(self.path, Path):
+            raise ZCMError('The path property is invalid: ' % self.path)
+        #raise ZCMException('The filesystem %s is invalid or uninitialized' % self.name)
+
     def load(self):
         self.clones = []
         self.older_clones = []
@@ -86,7 +97,6 @@ class Manager:
         self.next_id = None
         self.size = None
         if self.path.is_dir():
-            self.name = get_zfs_for_path(self.path)
             last_id = 0
             zfs_list_output = zfs_list(self.name, zfs_type='filesystem', properties=[
                                        'name', 'origin', 'mountpoint', 'creation', 'used'], recursive=True)

@@ -156,7 +156,7 @@ def value_convert(property_name, value):
         return False
     if value == '-':
         return None
-    if property_name == 'mountpoint':
+    if property_name in ['mountpoint', 'zfs_clone_manager:path']:
         return pathlib.Path(value)
     try:
         return int(value)
