@@ -25,7 +25,7 @@ def get_cmd(command,  arguments, options):
     cmd = ['/usr/sbin/zfs', command]
     if options is not None:
         for option in options:
-            cmd += ['-o', option]
+            cmd += ['-o', '"' + option + '"']
     if arguments is not None:
         cmd += arguments
     log.debug('Running command: "' + ' '.join(cmd) + '"')
@@ -97,7 +97,11 @@ def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursi
     return None
 
 
-def zfs_clone(zfs_name, snapshot, parent=None, mountpoint=None):
+def zfs_clone(zfs_name, snapshot, parent=None, mountpoint=None, zcm_active=None):
+    if not isinstance(zfs_name, str):
+        log.error('The ZFS clone name must be provided')
+    if not isinstance(snapshot, str):
+        log.error('The ZFS snapshot must be provided')
     filesystem = zfs_name
     if parent is not None:
         filesystem = parent + '/' + zfs_name
@@ -106,11 +110,17 @@ def zfs_clone(zfs_name, snapshot, parent=None, mountpoint=None):
     # if(destroy(filesystem, recursive=True) == 0):
     #    print('WARNING: Deleting filesystem (%s) ' % filesystem)
 
-    options = None
+    options = []
     if mountpoint is not None:
-        options = ['mountpoint=' + str(mountpoint)]
+        options.append('mountpoint=' + str(mountpoint))
     if zfs('clone', [snapshot, filesystem], options) == 0:
+        # For watever reason, we can not add zfs_clone_manager:active property at creation time
+        # We set this afterwards
+        if zcm_active is not None:
+            zfs_set(zfs_name, zcm_active=zcm_active)
+
         return filesystem
+
     return None
 
 

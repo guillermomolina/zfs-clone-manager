@@ -62,8 +62,6 @@ class Manager:
     def get_managers():
         zfs_list_output = zfs_list(properties=[
                                    'zfs_clone_manager:path', 'zfs_clone_manager:active'], recursive=True)
-        for zfs in zfs_list_output:
-            print(zfs)
         return [Manager(zfs['zfs_clone_manager:path']) for zfs in zfs_list_output if zfs['zfs_clone_manager:path']
                 is not None and zfs['zfs_clone_manager:active'] is None]
 
@@ -119,9 +117,13 @@ class Manager:
         if not auto_remove and max_total is not None and len(self.clones) >= max_total:
             raise ZCMException(
                 'There are already %d clones, can not create another' % len(self.clones))
-        snapshot = zfs_snapshot(self.next_id, self.active.name)
         id = self.next_id
-        zfs = zfs_clone(self.name + '/' + id, snapshot)
+        snapshot = zfs_snapshot(id, self.active.name)
+        if snapshot is None:
+            raise ZCMError('Could not create ZFS snapshot %s@%s' % (self.active.name, id)) 
+        zfs = zfs_clone(self.name + '/' + id, snapshot, zcm_active=False)
+        if zfs is None:
+            raise ZCMError('Could not create ZFS clone %s/%s' % (self.name, id)) 
         self.load()
         clone = self.get_clone(id)
         log.info('Created clone ' + clone.id)
