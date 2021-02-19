@@ -154,13 +154,13 @@ class Manager:
         failed = []
         for clone in self.clones:
             if clone != self.active:
-                if zfs_set(clone['name'], mounted=False) != 0:
-                    failed.append(clone['name'])
+                if zfs_set(clone.name, mounted=False) != 0:
+                    failed.append(clone.name)
         if zfs_set(self.name, mounted=False) != 0:
             failed.append(self.name)
         if self.active is not None:
-            if zfs_set(self.active['name'], mounted=False) != 0:
-                failed.append(self.active['name'])
+            if zfs_set(self.active.name, mounted=False) != 0:
+                failed.append(self.active.name)
         if failed:
             # at lest one unmount failed, remount all and fail
             self.mount()
@@ -170,11 +170,11 @@ class Manager:
     def mount(self):
         if not self.active:
             raise ZCMError('There is no active clone, activate one first')
-        zfs_set(self.active['name'], mounted=True)
+        zfs_set(self.active.name, mounted=True)
         zfs_set(self.name, mounted=True)
         for clone in self.clones:
             if clone != self.active:
-                zfs_set(clone['name'], mounted=True)
+                zfs_set(clone.name, mounted=True)
 
     def activate(self, id, max_newer=None, max_older=None, max_total=None, auto_remove=False):
         active = self.get_clone(id)
@@ -203,8 +203,8 @@ class Manager:
 
         self.unmount()
         if self.active is not None:
-            zfs_inherit(self.active['name'], 'mountpoint')
-        zfs_set(active['name'], mountpoint=self.path)
+            zfs_inherit(self.active.name, 'mountpoint')
+        zfs_set(active.name, mountpoint=self.path)
         self.active = active
         self.mount()
 
@@ -230,12 +230,12 @@ class Manager:
         promoted = None
         if clones:
             promoted = clones[-1]
-            zfs_promote(promoted['name'])
-        zfs_destroy(clone['name'])
+            zfs_promote(promoted.name)
+        zfs_destroy(clone.name)
         if clone.origin:
             zfs_destroy(clone.origin)
         if promoted:
-            zfs_destroy('%s@%s' % (promoted['name'], promoted.id))
+            zfs_destroy('%s@%s' % (promoted.name, promoted.id))
         log.info('Removed clone ' + clone.id)
         self.load()
 
