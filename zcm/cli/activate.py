@@ -44,6 +44,9 @@ class Activate:
         parser.add_argument('-a', '--auto-remove',
                             action='store_true',
                             help='Remove clones if maximum limits excedeed')
+        parser.add_argument('path',
+                            metavar='filesystem|path',
+                            help='zfs filesystem or path of ZCM')
         parser.add_argument('id',
                             help='clone id to activate')
 
@@ -52,4 +55,4 @@ class Activate:
         manager.activate(options.id, options.max_newer,
                                  options.max_older, options.max_total, options.auto_remove)
         if not options.quiet:
-            print('Activated clone ' + manager.id)
+            print('Activated clone ' + options.id)

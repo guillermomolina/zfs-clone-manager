@@ -49,7 +49,7 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.name, zfs)
-        self.assertEqual(manager.active, manager.clones[0])
+        self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000001')
         self.assertEqual(len(manager.older_instances), 0)
         self.assertEqual(len(manager.newer_instances), 0)
@@ -88,7 +88,7 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.name, zfs)
-        self.assertEqual(manager.active, manager.clones[0])
+        self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000002')
         self.assertEqual(len(manager.older_instances), 0)
         self.assertEqual(len(manager.newer_instances), 1)
@@ -149,7 +149,7 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.name, zfs)
-        self.assertEqual(manager.active, manager.clones[1])
+        self.assertEqual(manager.active_clone, manager.clones[1])
         self.assertEqual(manager.next_id, '00000002')
         self.assertEqual(len(manager.older_instances), 1)
         self.assertEqual(len(manager.newer_instances), 0)
@@ -206,7 +206,7 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.name, zfs)
-        self.assertEqual(manager.active, manager.clones[0])
+        self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000001')
         self.assertEqual(len(manager.older_instances), 0)
         self.assertEqual(len(manager.newer_instances), 0)
@@ -259,7 +259,7 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.name, zfs)
-        self.assertEqual(manager.active, manager.clones[0])
+        self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000002')
         self.assertEqual(len(manager.older_instances), 0)
         self.assertEqual(len(manager.newer_instances), 0)
@@ -308,7 +308,7 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.name, zfs)
-        self.assertEqual(manager.active, manager.clones[0])
+        self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000003')
         self.assertEqual(len(manager.older_instances), 0)
         self.assertEqual(len(manager.newer_instances), 2)
@@ -387,7 +387,7 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.name, zfs)
-        self.assertEqual(manager.active, manager.clones[1])
+        self.assertEqual(manager.active_clone, manager.clones[1])
         self.assertEqual(manager.next_id, '00000003')
         self.assertEqual(len(manager.older_instances), 1)
         self.assertEqual(len(manager.newer_instances), 1)
@@ -466,7 +466,7 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.name, zfs)
-        self.assertEqual(manager.active, manager.clones[1])
+        self.assertEqual(manager.active_clone, manager.clones[1])
         self.assertEqual(manager.next_id, '00000002')
         self.assertEqual(len(manager.older_instances), 1)
         self.assertEqual(len(manager.newer_instances), 0)
@@ -537,7 +537,7 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.name, zfs)
-        self.assertEqual(manager.active, manager.clones[0])
+        self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000003')
         self.assertEqual(len(manager.older_instances), 0)
         self.assertEqual(len(manager.newer_instances), 1)
@@ -604,7 +604,7 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.name, zfs)
-        self.assertEqual(manager.active, manager.clones[0])
+        self.assertEqual(manager.active_clone, manager.clones[0])
         self.assertEqual(manager.next_id, '00000006')
         self.assertEqual(len(manager.older_instances), 0)
         self.assertEqual(len(manager.newer_instances), 5)
@@ -633,7 +633,7 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.name, zfs)
-        self.assertEqual(manager.active, manager.clones[2])
+        self.assertEqual(manager.active_clone, manager.clones[2])
         self.assertEqual(manager.next_id, '00000005')
         self.assertEqual(len(manager.older_instances), 2)
         self.assertEqual(len(manager.newer_instances), 2)

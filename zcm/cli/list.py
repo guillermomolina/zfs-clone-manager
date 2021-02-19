@@ -46,7 +46,7 @@ class List:
             for clone in manager.clones:
                 table.append({
                     'name': manager.name,
-                    'a': '*' if manager.active == clone else ' ',
+                    'a': '*' if manager.active_clone == clone else ' ',
                     'id': clone.id,
                     'mountpoint': clone.mountpoint,
                     'origin': clone.origin_id if clone.origin_id else '',

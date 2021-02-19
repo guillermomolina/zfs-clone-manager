@@ -46,7 +46,7 @@ class Information:
                 'older': len(manager.older_instances),
                 'newer': len(manager.newer_instances),
                 'oldest_id': manager.clones[0].id,
-                'active_id': manager.active.id,
+                'active_id': manager.active_clone.id,
                 'newest_id': manager.clones[-1].id,
                 'next_id': manager.next_id
             }
@@ -60,7 +60,7 @@ class Information:
                 'Older clone count': len(manager.older_instances),
                 'Newer clone count': len(manager.newer_instances),
                 'Oldest clone ID': manager.clones[0].id,
-                'Active clone ID': manager.active.id,
+                'Active clone ID': manager.active_clone.id,
                 'Newest clone ID': manager.clones[-1].id,
                 'Next clone ID': manager.next_id
             }
