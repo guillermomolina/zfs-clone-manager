@@ -92,7 +92,7 @@ class Manager:
                                        'name', 'origin', 'mountpoint', 'creation', 'used'], recursive=True)
             for zfs in zfs_list_output:
                 if zfs['name'] == self.name:
-                    self.used = zfs['used']
+                    self.size = zfs['used']
                 else:
                     id = zfs['name'].split('/')[-1]
                     last_id = max(last_id, int(id, base=16))

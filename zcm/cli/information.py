@@ -31,37 +31,49 @@ class Information:
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='Show ZCM information',
                                               help='Show ZCM information')
-        parser.add_argument('-P', '--parseable',
-                            help='Show parseable info',
+        parser.add_argument('-t', '--table',
+                            help='Show information as table',
                             action='store_true')
+        parser.add_argument('path',
+                            nargs='*',
+                            metavar='filesystem|path',
+                            help='zfs filesystem or path to show')
 
     def __init__(self, options):
-        manager = Manager(options.path)
-        if options.parseable:
-            data = {
-                'path': manager.path,
-                'zfs': manager.name,
-                'size': format_bytes(manager.used),
-                'total': len(manager.clones),
-                'older': len(manager.older_instances),
-                'newer': len(manager.newer_instances),
-                'oldest_id': manager.clones[0].id,
-                'active_id': manager.active_clone.id,
-                'newest_id': manager.clones[-1].id,
-                'next_id': manager.next_id
-            }
-            print_table([data])
+        managers = []
+        if options.path:
+            managers = [ Manager(path) for path in options.path ]
         else:
-            data = {
-                'Path': manager.path,
-                'Root ZFS': manager.name,
-                'Root ZFS size': format_bytes(manager.used),
-                'Total clone count': len(manager.clones),
-                'Older clone count': len(manager.older_instances),
-                'Newer clone count': len(manager.newer_instances),
-                'Oldest clone ID': manager.clones[0].id,
-                'Active clone ID': manager.active_clone.id,
-                'Newest clone ID': manager.clones[-1].id,
-                'Next clone ID': manager.next_id
-            }
-            print_info(data)
+            managers = Manager.get_managers()
+        if options.table:
+            table = []
+            for manager in managers:
+                table.append({
+                    'path': manager.path,
+                    'zfs': manager.name,
+                    'size': format_bytes(manager.size),
+                    'total': len(manager.clones),
+                    'older': len(manager.older_clones),
+                    'newer': len(manager.newer_clones),
+                    'oldest_id': manager.clones[0].id,
+                    'active_id': manager.active_clone.id,
+                    'newest_id': manager.clones[-1].id,
+                    'next_id': manager.next_id
+                })
+            print_table(table)
+        else:
+            for manager in managers:
+                data = {
+                    'Path': manager.path,
+                    'Root ZFS': manager.name,
+                    'Root ZFS size': format_bytes(manager.size),
+                    'Total clone count': len(manager.clones),
+                    'Older clone count': len(manager.older_clones),
+                    'Newer clone count': len(manager.newer_clones),
+                    'Oldest clone ID': manager.clones[0].id,
+                    'Active clone ID': manager.active_clone.id,
+                    'Newest clone ID': manager.clones[-1].id,
+                    'Next clone ID': manager.next_id
+                }
+                print_info(data)
+                print()

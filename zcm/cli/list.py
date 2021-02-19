@@ -42,7 +42,12 @@ class List:
 
     def __init__(self, options):
         table = []
-        for manager in Manager.get_managers():
+        managers = []
+        if options.path:
+            managers = [ Manager(path) for path in options.path ]
+        else:
+            managers = Manager.get_managers()
+        for manager in managers:
             for clone in manager.clones:
                 table.append({
                     'name': manager.name,
