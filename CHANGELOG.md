@@ -8,6 +8,7 @@
 - Renamed zfs property to name in Manager
 - Better handling of on/off properties in zfs
 - Added Clone class to use it instead of a dict
+- Renamed name properties to zfs in Manager and Clone
 
 
 ## 2021-02-17: Version 2.2.0

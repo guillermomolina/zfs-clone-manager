@@ -50,9 +50,10 @@ class List:
         for manager in managers:
             for clone in manager.clones:
                 table.append({
-                    'name': manager.name,
+                    'manager': manager.zfs,
                     'a': '*' if manager.active_clone == clone else ' ',
                     'id': clone.id,
+                    'clone': clone.zfs,
                     'mountpoint': clone.mountpoint,
                     'origin': clone.origin_id if clone.origin_id else '',
                     'date': datetime.fromtimestamp(clone.creation),

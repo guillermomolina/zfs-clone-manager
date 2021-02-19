@@ -50,7 +50,7 @@ class Information:
             for manager in managers:
                 table.append({
                     'path': manager.path,
-                    'zfs': manager.name,
+                    'zfs': manager.zfs,
                     'size': format_bytes(manager.size),
                     'total': len(manager.clones),
                     'older': len(manager.older_clones),
@@ -65,7 +65,7 @@ class Information:
             for manager in managers:
                 data = {
                     'Path': manager.path,
-                    'Root ZFS': manager.name,
+                    'Root ZFS': manager.zfs,
                     'Root ZFS size': format_bytes(manager.size),
                     'Total clone count': len(manager.clones),
                     'Older clone count': len(manager.older_clones),

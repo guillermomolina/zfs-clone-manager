@@ -17,9 +17,9 @@ import logging
 log = logging.getLogger(__name__)
 
 class Clone:
-    def __init__(self, id, name, origin, origin_id, mountpoint, creation, size):
+    def __init__(self, id, zfs, origin, origin_id, mountpoint, creation, size):
         self.id = id
-        self.name = name
+        self.zfs = zfs
         self.origin = origin
         self.origin_id = origin_id
         self.mountpoint = mountpoint
