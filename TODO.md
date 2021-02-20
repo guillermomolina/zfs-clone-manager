@@ -1,6 +1,5 @@
 # Todo list for ZFS Manager Manager
 
-
-- Add --max-* and --auto-remove information in README.md
-- Add auto_remove tests
+- Add more sanity checks to Manager.load()
+- Add zfs binary path configuration and discovery
 - Add json and parseable output

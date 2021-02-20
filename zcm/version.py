@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__version__ = "3.0.0"
+__version__ = "3.0.dev1"
 AUTHOR = "Guillermo Adrián Molina"
 AUTHOR_EMAIL = "guillermoadrianmolina@hotmail.com"
 NAME = "zfs-clone-manager"
