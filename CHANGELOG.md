@@ -1,6 +1,6 @@
 # Change log for ZFS Manager Manager
 
-## 2021-XX-XX: Version 3.0.0
+## 2021-02-20: Version 3.0.0
 
 - Moved parameter -p,--path as subcommand argument filesystem|path
 - Changed subcommand name and aliases behavior 
