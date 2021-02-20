@@ -76,7 +76,7 @@ def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursi
                     return None
                 # For watever reason can not set mountpoint at creation time
                 # We set this afterwards
-                zfs_set(zfs_path, mountpoint=None)
+                #zfs_set(zfs_path, mountpoint=None)
                 
             is_zpool = False
 
