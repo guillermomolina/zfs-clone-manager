@@ -98,6 +98,7 @@ class Manager:
                     log.warning('The zfs_clone_manager:active property must not be set in root zfs ' + self.zfs)
                     zfs_inherit(self.zfs, 'zfs_clone_manager:active')
                 self.path = zfs['zfs_clone_manager:path']
+                self.size = zfs['used']
             else:
                 id = zfs['name'].split('/')[-1]
                 last_id = max(last_id, int(id, base=16))

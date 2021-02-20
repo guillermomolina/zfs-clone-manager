@@ -2,7 +2,7 @@
 
 ## 2021-XX-XX: Version 3.0.1
 
--
+- Fix Manager.size uninitialized
 
 
 ## 2021-02-20: Version 3.0.0
