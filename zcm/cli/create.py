@@ -50,5 +50,5 @@ class Create:
         clone = manager.create(
             options.max_newer, options.max_total, options.auto_remove)
         if not options.quiet:
-            print('Created instance %s at path %s' %
+            print('Created clone %s at path %s' %
                   (clone.id, clone.mountpoint))
