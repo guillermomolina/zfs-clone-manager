@@ -30,8 +30,8 @@ class Create:
                                               parents=[parent_parser],
                                               aliases=Create.aliases,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='Create a new instance',
-                                              help='Create a new instance')
+                                              description='Create a new clone',
+                                              help='Create a new clone')
         parser.add_argument('-m', '--max-newer',
                             type=check_one_or_more,
                             help='Do not create if there are <max-newer> newer clones')
