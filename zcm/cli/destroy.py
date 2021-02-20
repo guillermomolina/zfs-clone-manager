@@ -18,11 +18,11 @@ import argparse
 from zcm.api.manager import Manager
 
 
-def are_you_sure(force, path):
+def are_you_sure(force, manager):
     if force:
         return True
     print('WARNING!!!!!!!!')
-    print('All the filesystems, clones, snapshots and directories associated with %s will be permanently deleted.' % path)
+    print('All the filesystems, clones, snapshots and directories associated with %s will be permanently deleted.' % manager.zfs)
     print('This operation is not reversible.')
     answer = input('Do you want to proceed? (yes/NO) ')
     return answer == 'yes'
@@ -44,10 +44,15 @@ class Destroy:
         parser.add_argument('--force',
                             help='Force destroy without confirmation',
                             action='store_true')
+        parser.add_argument('path',
+                            metavar='filesystem|path',
+                            nargs='+',
+                            help='zfs filesystem or path of ZCM')
 
     def __init__(self, options):
-        manager = Manager(options.path)
-        if are_you_sure(options.force, options.path):
-            manager.destroy()
-            if not options.quiet:
-                print('Destroyed ZCM at path %s' % options.path)
+        managers = [ Manager(path) for path in options.path ]
+        for manager in managers:
+            if are_you_sure(options.force, manager):
+                manager.destroy()
+                if not options.quiet:
+                    print('Destroyed ZCM %s' % manager.zfs)
