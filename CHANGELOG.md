@@ -1,8 +1,9 @@
 # Change log for ZFS Manager Manager
 
-## 2021-XX-XX: Version 3.0.1
+## 2021-XX-XX: Version 3.X.X
 
 - Fix Manager.size uninitialized
+- Removed loop for path detection in get_zcm_for_path()
 
 
 ## 2021-02-20: Version 3.0.0

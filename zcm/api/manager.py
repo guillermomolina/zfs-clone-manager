@@ -24,13 +24,25 @@ from zcm.lib.zfs import (zfs_clone, zfs_create, zfs_destroy, zfs_exists,
 
 log = logging.getLogger(__name__)
 
+
 def get_zcm_for_path(path_str):
-    zfs_list_output = zfs_list(zfs_type='filesystem', properties=[
-                               'name', 'zfs_clone_manager:path', 'zfs_clone_manager:active'])
-    for zfs in zfs_list_output:
-        if str(zfs['zfs_clone_manager:path']) == path_str and zfs['zfs_clone_manager:active'] is None:
-            return zfs['name']
-    return None
+    path = Path(path_str).absolute()
+    if not path.is_dir():
+        return None
+    absolute_path_str = str(path)
+    zfs_list_output = zfs_list(absolute_path_str, zfs_type='filesystem', properties=[
+                               'name', 'zfs_clone_manager:path', 'mountpoint'])
+    if len(zfs_list_output) != 1:
+        return None
+    zfs = zfs_list_output[0]
+    if str(zfs['zfs_clone_manager:path']) == absolute_path_str and str(zfs['mountpoint']) == absolute_path_str:
+        leaves = zfs['name'].split('/')
+        name = '/'.join(leaves[:-1])
+        try:
+            int(leaves[-1], base=16)
+        except ValueError:
+            return None
+        return name
 
 
 def snapshot_to_origin_id(snapshot):
@@ -81,32 +93,48 @@ class Manager:
         log.info('Created ZCM %s at path %s' % (zfs_str, path_str))
 
     def load(self):
+        if not isinstance(self.zfs, str):
+            raise ZCMError(
+                'The name property is invalid: ' + str(self.zfs))
+        self.path = None
         self.clones = []
         self.older_clones = []
         self.newer_clones = []
         self.active_clone = None
         self.next_id = None
         self.size = None
-        if not isinstance(self.zfs, str):
-            raise ZCMError('The name property is invalid: ' + str(self.zfs))
         last_id = 0
         zfs_list_output = zfs_list(self.zfs, zfs_type='filesystem', properties=[
-                                    'name', 'zfs_clone_manager:path', 'zfs_clone_manager:active', 'origin', 'mountpoint', 'creation', 'used'], recursive=True)
+            'name', 'zfs_clone_manager:path', 'zfs_clone_manager:active', 'origin', 'mountpoint',
+            'creation', 'used'], recursive=True)
+        if not zfs_list_output:
+            raise ZCMError(
+                'There is no ZCM manager at %s' % self.zfs)
         for zfs in zfs_list_output:
-            if zfs['name'] == self.zfs:
-                if zfs['zfs_clone_manager:active'] is not None:
-                    log.warning('The zfs_clone_manager:active property must not be set in root zfs ' + self.zfs)
-                    zfs_inherit(self.zfs, 'zfs_clone_manager:active')
+            if self.path is None:
+                self.zfs = zfs['name']
+                if zfs['zfs_clone_manager:path'] is None:
+                    raise ZCMError(
+                        'The ZFS %s is not a valid ZCM manager' % zfs['name'])
                 self.path = zfs['zfs_clone_manager:path']
                 self.size = zfs['used']
+                if zfs['zfs_clone_manager:active'] is not None:
+                    log.warning(
+                        'The zfs_clone_manager:active property must not be set in root zfs ' + self.zfs)
+                    zfs_inherit(self.zfs, 'zfs_clone_manager:active')
             else:
                 id = zfs['name'].split('/')[-1]
-                last_id = max(last_id, int(id, base=16))
+                try:
+                    last_id = max(last_id, int(id, base=16))
+                except ValueError:
+                    raise ZCMError(
+                        'The ZFS %s is not a valid ZCM clone' % zfs['name'])
                 origin_id = snapshot_to_origin_id(zfs['origin'])
                 clone = Clone(id, zfs['name'], zfs['origin'], origin_id,
-                                zfs['mountpoint'], zfs['creation'], zfs['used'])
+                              zfs['mountpoint'], zfs['creation'], zfs['used'])
                 if not isinstance(self.path, Path) or not self.path.is_dir():
-                    raise ZCMError('The path property is invalid: ' + self.path)
+                    raise ZCMError(
+                        'The path property is invalid: ' + self.path)
                 if zfs['mountpoint'] == self.path:
                     self.active_clone = clone
                 else:
