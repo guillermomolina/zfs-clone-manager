@@ -19,18 +19,18 @@ from zcm.api.manager import Manager
 from zcm.lib.helpers import check_one_or_more
 
 
-class Create:
-    name = 'create'
+class Clone:
+    name = 'clone'
     aliases = []
 
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser(Create.name,
+        parser = parent_subparsers.add_parser(Clone.name,
                                               parents=[parent_parser],
-                                              aliases=Create.aliases,
+                                              aliases=Clone.aliases,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='Create a new clone',
+                                              description='Create a new clone from the active clone',
                                               help='Create a new clone')
         parser.add_argument('-m', '--max-newer',
                             type=check_one_or_more,
@@ -47,7 +47,7 @@ class Create:
 
     def __init__(self, options):
         manager = Manager(options.path)
-        clone = manager.create(
+        clone = manager.clone(
             options.max_newer, options.max_total, options.auto_remove)
         if not options.quiet:
             print('Created clone %s at path %s' %

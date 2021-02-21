@@ -143,7 +143,7 @@ class Manager:
                 self.clones.append(clone)
         self.next_id = format(last_id + 1, '08x')
 
-    def create(self, max_newer=None, max_total=None, auto_remove=False):
+    def clone(self, max_newer=None, max_total=None, auto_remove=False):
         if not self.active_clone:
             raise ZCMError('There is no active clone, activate one first')
         if not auto_remove and max_newer is not None and len(self.newer_clones) >= max_newer:

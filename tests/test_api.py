@@ -82,7 +82,7 @@ class TestAPI(unittest.TestCase):
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
 
@@ -135,7 +135,7 @@ class TestAPI(unittest.TestCase):
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -196,7 +196,7 @@ class TestAPI(unittest.TestCase):
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -245,7 +245,7 @@ class TestAPI(unittest.TestCase):
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -298,11 +298,11 @@ class TestAPI(unittest.TestCase):
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
 
@@ -369,11 +369,11 @@ class TestAPI(unittest.TestCase):
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -448,11 +448,11 @@ class TestAPI(unittest.TestCase):
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -519,11 +519,11 @@ class TestAPI(unittest.TestCase):
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
-            manager.create()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         try:
@@ -590,17 +590,17 @@ class TestAPI(unittest.TestCase):
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
-            manager.create()
-            manager.create()
-            manager.create()
-            manager.create()
+            manager.clone()
+            manager.clone()
+            manager.clone()
+            manager.clone()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         with self.assertRaises(ZCMException):
-            manager.create(max_newer=5)
+            manager.clone(max_newer=5)
         with self.assertRaises(ZCMException):
-            manager.create(max_total=6)
+            manager.clone(max_total=6)
 
         self.assertEqual(manager.path, Path(directory))
         self.assertEqual(manager.zfs, zfs)
@@ -616,10 +616,10 @@ class TestAPI(unittest.TestCase):
         except ZCMError as e:
             self.fail('Instantiation should not raise exceptions')
         try:
-            manager.create()
-            manager.create()
-            manager.create()
-            manager.create()
+            manager.clone()
+            manager.clone()
+            manager.clone()
+            manager.clone()
         except ZCMError as e:
             self.fail('Creation should not raise exceptions')
         with self.assertRaises(ZCMException):
