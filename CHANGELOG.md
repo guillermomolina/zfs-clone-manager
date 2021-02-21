@@ -2,6 +2,8 @@
 
 ## 2021-XX-XX: Version 3.1.X
 
+- Added new check in Manager.load()
+
 
 ## 2021-02-21: Version 3.1.0
 
