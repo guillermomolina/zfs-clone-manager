@@ -54,7 +54,7 @@ def zfs(command,  arguments=None, options=None):
     return process.returncode
 
 
-def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursive=False, zcm_path=None, zcm_active=None):
+def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursive=False, zcm_path=None):
     filesystem = zfs_name
     if parent is None:
         last_index = zfs_name.rfind('/')
@@ -96,14 +96,11 @@ def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursi
         # We set them afterwards
         if mountpoint is not None:
             zfs_set(filesystem, mountpoint=mountpoint)
-        if zcm_active is not None:
-            zfs_set(filesystem, zcm_active=zcm_active)
-
         return filesystem
     return None
 
 
-def zfs_clone(zfs_name, snapshot, parent=None, mountpoint=None, zcm_active=None):
+def zfs_clone(zfs_name, snapshot, parent=None, mountpoint=None):
     if not isinstance(zfs_name, str):
         log.error('The ZFS clone name must be provided')
     if not isinstance(snapshot, str):
@@ -120,17 +117,12 @@ def zfs_clone(zfs_name, snapshot, parent=None, mountpoint=None, zcm_active=None)
     if mountpoint is not None:
         options.append('mountpoint=' + str(mountpoint))
     if zfs('clone', [snapshot, filesystem], options) == 0:
-        # For watever reason, we can not add zfs_clone_manager:active property at creation time
-        # We set this afterwards
-        if zcm_active is not None:
-            zfs_set(zfs_name, zcm_active=zcm_active)
-
         return filesystem
 
     return None
 
 
-def zfs_set(zfs_name, readonly=None, mountpoint=None, mounted=None, zcm_path=None, zcm_active=None):
+def zfs_set(zfs_name, readonly=None, mountpoint=None, mounted=None, zcm_path=None):
     result = 0
     if readonly is not None:
         option = 'readonly=' + ('on' if readonly else 'off')
@@ -145,9 +137,6 @@ def zfs_set(zfs_name, readonly=None, mountpoint=None, mounted=None, zcm_path=Non
     if zcm_path is not None:
         result |= zfs(
             'set', ['zfs_clone_manager:path=' + str(zcm_path), zfs_name])
-    if zcm_active is not None:
-        option = 'zfs_clone_manager:active=' + ('on' if zcm_active else 'off')
-        result |= zfs('set', [option, zfs_name])
     return result
 
 

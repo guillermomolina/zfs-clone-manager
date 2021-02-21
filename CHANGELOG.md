@@ -1,9 +1,12 @@
 # Change log for ZFS Manager Manager
 
-## 2021-XX-XX: Version 3.X.X
+## 2021-XX-XX: Version 3.1.0
 
 - Fix Manager.size uninitialized
 - Removed loop for path detection in get_zcm_for_path()
+- Removed ZFS property zfs_clone_manager:active.
+  Active detection going back to clone_zfs.mountpoint==root_zfs.zfs_clone_manager:path
+- Renamed back create command to clone
 
 
 ## 2021-02-20: Version 3.0.0

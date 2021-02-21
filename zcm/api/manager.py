@@ -72,10 +72,12 @@ class Manager:
 
     @staticmethod
     def get_managers():
-        zfs_list_output = zfs_list(properties=['name',
-                                               'zfs_clone_manager:path', 'zfs_clone_manager:active'], recursive=True)
-        return [Manager(zfs['name']) for zfs in zfs_list_output if zfs['zfs_clone_manager:path']
-                is not None and zfs['zfs_clone_manager:active'] is None]
+        zfs_list_output = zfs_list(
+            properties=['name', 'zfs_clone_manager:path', 'mountpoint'])
+        return [Manager(zfs['name'])
+                for zfs in zfs_list_output
+                if zfs['zfs_clone_manager:path'] is not None and
+                zfs['mountpoint'] == Path(zfs['zfs_clone_manager:path'], '.clones')]
 
     @staticmethod
     def initialize_zfs(zfs_str, path_str):
@@ -85,7 +87,7 @@ class Manager:
         if zfs_exists(zfs_str):
             raise ZCMError('ZFS %s already created, can not use it' % zfs_str)
         zfs = zfs_create('00000000', zfs_str, mountpoint=path,
-                         recursive=True, zcm_active=True)
+                         recursive=True)
         if zfs is None:
             raise ZCMError('Could not clone ZFS %s at %s' %
                            (zfs_str, path_str))
@@ -105,7 +107,7 @@ class Manager:
         self.size = None
         last_id = 0
         zfs_list_output = zfs_list(self.zfs, zfs_type='filesystem', properties=[
-            'name', 'zfs_clone_manager:path', 'zfs_clone_manager:active', 'origin', 'mountpoint',
+            'name', 'zfs_clone_manager:path', 'origin', 'mountpoint',
             'creation', 'used'], recursive=True)
         if not zfs_list_output:
             raise ZCMError(
@@ -118,10 +120,6 @@ class Manager:
                         'The ZFS %s is not a valid ZCM manager' % zfs['name'])
                 self.path = zfs['zfs_clone_manager:path']
                 self.size = zfs['used']
-                if zfs['zfs_clone_manager:active'] is not None:
-                    log.warning(
-                        'The zfs_clone_manager:active property must not be set in root zfs ' + self.zfs)
-                    zfs_inherit(self.zfs, 'zfs_clone_manager:active')
             else:
                 id = zfs['name'].split('/')[-1]
                 try:
@@ -159,7 +157,7 @@ class Manager:
         if snapshot is None:
             raise ZCMError('Could not create ZFS snapshot %s@%s' %
                            (self.active_clone.zfs, id))
-        zfs = zfs_clone(self.zfs + '/' + id, snapshot, zcm_active=False)
+        zfs = zfs_clone(self.zfs + '/' + id, snapshot)
         if zfs is None:
             raise ZCMError('Could not create ZFS clone %s/%s' %
                            (self.zfs, id))
@@ -243,8 +241,7 @@ class Manager:
         self.unmount()
         if self.active_clone is not None:
             zfs_inherit(self.active_clone.zfs, 'mountpoint')
-            zfs_set(self.active_clone.zfs, zcm_active=False)
-        zfs_set(next_active.zfs, mountpoint=self.path, zcm_active=True)
+        zfs_set(next_active.zfs, mountpoint=self.path)
         self.active_clone = next_active
         self.mount()
 
