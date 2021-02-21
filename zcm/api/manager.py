@@ -36,10 +36,10 @@ def get_zcm_for_path(path_str):
         return None
     zfs = zfs_list_output[0]
     if str(zfs['zfs_clone_manager:path']) == absolute_path_str and str(zfs['mountpoint']) == absolute_path_str:
-        leaves = zfs['name'].split('/')
-        name = '/'.join(leaves[:-1])
+        splitted_name = zfs['name'].split('/')
+        name = '/'.join(splitted_name[:-1])
         try:
-            int(leaves[-1], base=16)
+            int(splitted_name[-1], base=16)
         except ValueError:
             return None
         return name
@@ -121,7 +121,12 @@ class Manager:
                 self.path = zfs['zfs_clone_manager:path']
                 self.size = zfs['used']
             else:
-                id = zfs['name'].split('/')[-1]
+                splitted_name = zfs['name'].split('/')
+                name = '/'.join(splitted_name[:-1])
+                id = splitted_name[-1]
+                if name != self.zfs:
+                   raise ZCMError(
+                        'The ZFS %s is not a valid ZCM clone' % zfs['name'])
                 try:
                     last_id = max(last_id, int(id, base=16))
                 except ValueError:
