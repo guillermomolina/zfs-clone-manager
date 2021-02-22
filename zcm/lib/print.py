@@ -12,19 +12,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from collections import deque
+from itertools import islice
+
 from zcm import zcm_config
 
 # TODO: use from prettytable import PrettyTable ?
 
+def print_table(table, truncate=True, separation=2, identation=0, page_size=25):
+    i = iter(table)
+    ask_for_more = False
+    while True:
+        page = tuple(islice(i, 0, page_size))
+        if len(page):
+            if ask_for_more:
+                answer = input('Do you want to see more? (Y/n) ')
+                if answer and answer.upper()[0] == 'N':
+                    return
+            print_table_page(page, truncate, separation, identation)
+            ask_for_more = True
+        else:
+            return
 
-def print_table(table, truncate=True, separation=2, identation=0):
+
+def print_table_page(page, truncate=True, separation=2, identation=0):
     MAX_COLUMN_LENGTH = zcm_config['max_column_length']
-    if len(table) == 0:
+    if len(page) == 0:
         return
 
     columns = []
     # initialize columns from first row's keys
-    for key in table[0]:
+    for key in page[0]:
         columns.append({
             'key': key,
             'tittle': key.upper(),
@@ -33,7 +51,7 @@ def print_table(table, truncate=True, separation=2, identation=0):
 
     # adjust columns lenghts to max record sizes
     for column in columns:
-        for row in table:
+        for row in page:
             value = str(row[column['key']]).replace('\t', ' ')
             row[column['key']] = value
             column['length'] = max(column['length'], len(value))
@@ -51,7 +69,7 @@ def print_table(table, truncate=True, separation=2, identation=0):
         strings.append(str_format.format(column['tittle']))
     print(separation_string.join(strings))
 
-    for row in table:
+    for row in page:
         strings = [''] * identation if identation > 0 else []
         for column in columns:
             value = row[column['key']]
@@ -60,7 +78,6 @@ def print_table(table, truncate=True, separation=2, identation=0):
             str_format = '{:%s}' % str(column['length'])
             strings.append(str_format.format(value))
         print(separation_string.join(strings))
-
 
 def format_bytes(size):
     # 2**10 = 1024
