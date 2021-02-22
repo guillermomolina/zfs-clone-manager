@@ -27,7 +27,7 @@ directory = '/my_cool_zfs_directory'
 class TestAPI(unittest.TestCase):
     def setUp(self):
         try:
-            Manager.create_manager(zfs, directory)
+            Manager.initialize_manager(zfs, directory)
         except ZCMError:
             pass
         return super().setUp()
@@ -41,7 +41,7 @@ class TestAPI(unittest.TestCase):
 
     def test_initialize(self):
         with self.assertRaises(ZCMError):
-            Manager.create_manager(zfs, directory)
+            Manager.initialize_manager(zfs, directory)
         clone = None
         try:
             manager = Manager(directory)
