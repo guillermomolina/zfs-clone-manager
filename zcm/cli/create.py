@@ -18,19 +18,19 @@ import argparse
 from zcm.api.manager import Manager
 
 
-class create:
+class Create:
     name = 'create'
     aliases = []
 
     @staticmethod
     def init_parser(parent_subparsers):
         parent_parser = argparse.ArgumentParser(add_help=False)
-        parser = parent_subparsers.add_parser(create.name,
+        parser = parent_subparsers.add_parser(Create.name,
                                               parents=[parent_parser],
-                                              aliases=create.aliases,
+                                              aliases=Create.aliases,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='Create ZCM on specified ZFS',
-                                              help='Create ZCM on specified ZFS')
+                                              description='Create a ZCM manager on the specified ZFS',
+                                              help='Create ZCM')
         parser.add_argument('zfs',
                             metavar='filesystem',
                             help='root ZFS filesystem')
