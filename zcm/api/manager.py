@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import logging
+import shutil
 from pathlib import Path
 
 from zcm.api.clone import Clone
@@ -122,13 +123,16 @@ class Manager:
             if zfs_set(zfs_str, mounted=True):
                 raise ZCMError(
                     'Could not mount ZFS ' + zfs_str)
+            log.info('Migrated ZFS %s at path %s to ZCM' % (zfs_str, path_str))
             return
+        original_path = None 
         if path.exists():
             if migrate != 'PATH':
                 raise ZCMError(
-                    'Path %s already exists, can not initialize a manager' % path_str)
-            log.error('NYI')
-            return
+                    'Path %s already exists, will not initialize a manager' % path_str)
+            random_id = id_generator()
+            original_path = Path(path.parents[0], random_id)
+            path.rename(original_path)           
         zfs = zfs_create('00000000', zfs_str, mountpoint=path,
                          recursive=True)
         if zfs is None:
@@ -136,6 +140,21 @@ class Manager:
                            (zfs_str, path_str))
         zfs_set(zfs_str, mountpoint=Path(path, '.clones'), zcm_path=path_str)
         log.info('Created ZCM %s at path %s' % (zfs_str, path_str))
+        if original_path:
+            try:
+                # python >= 3.8
+                #shutil.copytree(original_path, path, symlinks=True, dirs_exist_ok=True)
+                # python < 3.8:
+                for each_file in original_path.glob('*'): 
+                    if each_file.is_dir():
+                        shutil.copytree(each_file, path.joinpath(each_file.name), symlinks=True)
+                    else:
+                        shutil.copy2(each_file, path.joinpath(each_file.name))
+                shutil.rmtree(original_path)
+                log.info('Moved content of path %s to clone' % path_str)
+            except:
+                raise ZCMError('Could not move content of original directory, kept at %s' % original_path)
+           
 
     def load(self):
         if not isinstance(self.zfs, str):
