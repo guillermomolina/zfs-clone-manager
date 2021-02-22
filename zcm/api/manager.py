@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import logging
-from datetime import datetime
 from pathlib import Path
 
 from zcm.api.clone import Clone
