@@ -75,6 +75,19 @@ The suggested workflow is:
     ```
 
 
+- Show differences of a clone from it's origin
+
+    ```bash
+    $ mkdir /directory/tmp
+    $ mkfile 10m /directory/tmp/file
+    $ zcm diff /directory 00000002
+    MOUNTPOINT  DATE                        CHANGE    FILE      FILE_TYPE
+    /directory  2021-02-22 06:19:34.094470  Modified  .         directory
+    /directory  2021-02-22 06:21:07.236145  Added     tmp       directory
+    /directory  2021-02-22 06:21:07.309059  Added     tmp/file  file     
+    ```
+
+
 - Remove clones
 
     ```bash
