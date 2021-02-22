@@ -21,10 +21,10 @@ from pathlib import Path
 from zcm import __version__, zcm_config
 from zcm.cli.activate import Activate
 from zcm.cli.clone import Clone
+from zcm.cli.create import Create
 from zcm.cli.destroy import Destroy
 from zcm.cli.difference import Difference
 from zcm.cli.information import Information
-from zcm.cli.initialize import Initialize
 from zcm.cli.list import List
 from zcm.cli.remove import Remove
 from zcm.exceptions import ZCMException
@@ -52,7 +52,7 @@ class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter,
 
 
 class CLI:
-    commands = [Initialize, Information, List, Clone, Activate, Difference, Remove, Destroy]
+    commands = [Create, Information, List, Clone, Activate, Difference, Remove, Destroy]
 
     def __init__(self):
         parser = argparse.ArgumentParser(

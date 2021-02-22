@@ -38,7 +38,7 @@ class create:
                             help='root path')
 
     def __init__(self, options):
-        Manager.initialize_zfs(options.zfs, options.path)
+        Manager.create_manager(options.zfs, options.path)
         if not options.quiet:
             print('ZCM created with ZFS %s at path %s' %
                   (options.zfs, options.path))

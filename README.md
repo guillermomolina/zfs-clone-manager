@@ -3,7 +3,7 @@
 Tool to add version control and historic data of a directory with ZFS. The functionality is similar to Solaris beadm but generalized for any ZFS filesystem, not just ROOT and VAR.
 
 The suggested workflow is:
-1. Initialize (zcm init)
+1. Create a manager (zcm create)
 2. Make changes in active clone
 3. Create new clone (zcm clone)
 4. Make changes in new clone
@@ -13,11 +13,11 @@ The suggested workflow is:
 
 ## Usage
 
-- Initialize ZCM
+- Create a ZCM manager
 
     ```bash
-    $ zcm init rpool/directory /directory
-    ZCM initialized ZFS rpool/directory at path /directory
+    $ zcm create rpool/directory /directory
+    ZCM created ZFS rpool/directory at path /directory
     ```
 
     "rpool/directory" -> root of the ZFS for clones and snapshots.
