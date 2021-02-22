@@ -1,4 +1,4 @@
-# ZFS Manager Manager
+# ZFS Clone Manager
 
 Tool to add version control and historic data of a directory with ZFS. The functionality is similar to Solaris beadm but generalized for any ZFS filesystem, not just ROOT and VAR.
 

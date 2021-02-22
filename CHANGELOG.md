@@ -1,4 +1,9 @@
-# Change log for ZFS Manager Manager
+# Change log for ZFS Clone Manager
+
+## 2021-02-22: Version 3.2.1
+
+- Fix some copy paste issues with some strings
+
 
 ## 2021-02-22: Version 3.2.0
 
@@ -49,7 +54,7 @@
 
 ## 2021-02-16: Version 2.0.0
 
-- Renamed project to ZFS Manager Manager
+- Renamed project to ZFS Clone Manager
 - Renamed CLI tool to zcm
 
 

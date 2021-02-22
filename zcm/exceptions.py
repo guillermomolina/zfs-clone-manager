@@ -14,11 +14,11 @@
 # limitations under the License.
 
 class ZCMException(Exception):
-    def __init__(self, message="ZFS Manager Manager exception"):
+    def __init__(self, message="ZFS Clone Manager exception"):
         super().__init__()
         self.message = message
 
 
 class ZCMError(ZCMException):
-    def __init__(self, message="ZFS Manager Manager fatal error"):
+    def __init__(self, message="ZFS Clone Manager fatal error"):
         super().__init__(message)
