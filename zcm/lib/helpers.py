@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import argparse
+import random
+import string
 
 
 def check_positive(value, min_value=0):
@@ -24,3 +26,8 @@ def check_positive(value, min_value=0):
 
 def check_one_or_more(value):
     return check_positive(value, 1)
+
+
+# https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
+def id_generator(size=10, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))

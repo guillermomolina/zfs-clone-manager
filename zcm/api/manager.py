@@ -17,9 +17,10 @@ from pathlib import Path
 
 from zcm.api.clone import Clone
 from zcm.exceptions import ZCMError, ZCMException
+from zcm.lib.helpers import id_generator
 from zcm.lib.zfs import (zfs_clone, zfs_create, zfs_destroy, zfs_exists,
-                         zfs_inherit, zfs_list, zfs_promote, zfs_set,
-                         zfs_snapshot)
+                         zfs_inherit, zfs_list, zfs_promote, zfs_rename,
+                         zfs_set, zfs_snapshot)
 
 log = logging.getLogger(__name__)
 
@@ -79,16 +80,59 @@ class Manager:
                 zfs['mountpoint'] == Path(zfs['zfs_clone_manager:path'], '.clones')]
 
     @staticmethod
-    def initialize_manager(zfs_str, path_str):
+    def initialize_manager(zfs_str, path_str, migrate=None):
         path = Path(path_str)
+        zfs_list_output = zfs_list(zfs_str, zfs_type='all', properties=[
+            'name', 'type', 'zfs_clone_manager:path', 'origin', 'mountpoint'], recursive=True)
+        if zfs_list_output:
+            zfs = zfs_list_output[0]
+            if zfs['zfs_clone_manager:path']:
+                raise ZCMError(
+                    'The ZFS %s is a ZCM manager, will not initialize' % zfs_str)
+            if len(zfs_list_output) > 1:
+                raise ZCMError(
+                    'The ZFS %s has children, can not initialize ZCM with it' % zfs_str)
+            if zfs['type'] != 'filesystem':
+                raise ZCMError('The ZFS %s is of type %s, can not initialize ZCM with it' % (
+                    zfs_str, zfs['type']))
+            if migrate != 'ZFS':
+                raise ZCMError(
+                    'ZFS %s already exists, will not initialize a manager with it' % zfs_str)
+            if zfs['mountpoint'] != path and path.exists():
+                 raise ZCMError(
+                    'Path %s already exists (and it is not the ZFS %s mountpoint, can not use it' % (path_str, zfs_str))
+            random_id = id_generator()
+            zfs_parts = zfs_str.split('/')[:-1]
+            zfs_parts.append(random_id)
+            random_zfs = '/'.join(zfs_parts)
+            if zfs_rename(zfs_str, random_zfs):
+                raise ZCMError(
+                    'Could not rename ZFS from %s to %s' + (zfs_str, random_zfs))
+            zfs = zfs_create(zfs_str, mountpoint=Path(path, '.clones'), zcm_path=path_str)
+            if zfs is None:
+                raise ZCMError('Could not create ZFS %s at %s' %
+                            (zfs_str, path_str))
+           
+            if zfs_set(zfs_str, mounted=False):
+                raise ZCMError(
+                    'Could not umount ZFS ' + zfs_str)
+            if zfs_rename(random_zfs, zfs_str + '/00000000'):
+                raise ZCMError(
+                    'Could not rename ZFS from %s to %s' % (random_zfs, zfs_str + '/00000000'))
+            if zfs_set(zfs_str, mounted=True):
+                raise ZCMError(
+                    'Could not mount ZFS ' + zfs_str)
+            return
         if path.exists():
-            raise ZCMError('Path %s already exists, can not create a manager. Try initializing' % path_str)
-        if zfs_exists(zfs_str):
-            raise ZCMError('ZFS %s already exists, can not create a manager. Try initializing' % zfs_str)
+            if migrate != 'PATH':
+                raise ZCMError(
+                    'Path %s already exists, can not initialize a manager' % path_str)
+            log.error('NYI')
+            return
         zfs = zfs_create('00000000', zfs_str, mountpoint=path,
                          recursive=True)
         if zfs is None:
-            raise ZCMError('Could not clone ZFS %s at %s' %
+            raise ZCMError('Could not create ZFS %s at %s' %
                            (zfs_str, path_str))
         zfs_set(zfs_str, mountpoint=Path(path, '.clones'), zcm_path=path_str)
         log.info('Created ZCM %s at path %s' % (zfs_str, path_str))
@@ -124,7 +168,7 @@ class Manager:
                 name = '/'.join(splitted_name[:-1])
                 id = splitted_name[-1]
                 if name != self.zfs:
-                   raise ZCMError(
+                    raise ZCMError(
                         'The ZFS %s is not a valid ZCM clone' % zfs['name'])
                 try:
                     last_id = max(last_id, int(id, base=16))

@@ -31,14 +31,26 @@ class Initialize:
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='Init ZCM on specified ZFS',
                                               help='Init ZCM on specified ZFS')
+        migrate_parser_group = parser.add_mutually_exclusive_group()
+        migrate_parser_group.add_argument('-m', '--migrate-zfs',
+                            help='Migrate existing ZFS',
+                            action='store_true')
+        migrate_parser_group.add_argument('-M', '--migrate-path',
+                            help='Migrate existing path',
+                            action='store_true')
         parser.add_argument('zfs',
                             metavar='filesystem',
-                            help='root ZFS filesystem')
+                            help='root ZFS filesystem for manager')
         parser.add_argument('path',
-                            help='root path')
+                            help='path to use for active clone')
 
     def __init__(self, options):
-        Manager.initialize_manager(options.zfs, options.path)
+        migrate = None
+        if options.migrate_zfs:
+            migrate = 'ZFS'
+        if options.migrate_path:
+            migrate = 'PATH'
+        Manager.initialize_manager(options.zfs, options.path, migrate)
         if not options.quiet:
             print('ZCM initialized ZFS %s at path %s' %
                   (options.zfs, options.path))

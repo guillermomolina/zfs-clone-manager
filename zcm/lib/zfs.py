@@ -88,8 +88,6 @@ def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursi
     options = []
     if compression is not None:
         options.append('compression=' + compression)
-    if zcm_path is not None:
-        options.append('zfs_clone_manager:path=' + str(zcm_path))
     if len(options) == 0:
         options = None
     if zfs('create', [filesystem], options) == 0:
@@ -97,6 +95,8 @@ def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursi
         # We set them afterwards
         if mountpoint is not None:
             zfs_set(filesystem, mountpoint=mountpoint)
+        if zcm_path is not None:
+            zfs_set(filesystem, zcm_path=zcm_path)
         return filesystem
     return None
 
