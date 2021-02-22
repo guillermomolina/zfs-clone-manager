@@ -1,6 +1,6 @@
 # Change log for ZFS Manager Manager
 
-## 2021-XX-XX: Version 3.1.X
+## 2021-XX-XX: Version 3.2.0
 
 - Added new check in Manager.load()
 - Added command diff
