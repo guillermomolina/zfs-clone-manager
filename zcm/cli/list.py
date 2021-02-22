@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import argparse
-from datetime import datetime
 
 from zcm.api.manager import Manager
 from zcm.lib.print import format_bytes, print_table
@@ -32,9 +31,17 @@ class List:
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='List hosts',
                                               help='List hosts')
-        parser.add_argument('--no-trunc',
+        parser.add_argument('-T', '--no-trunc',
                             help='Don\'t truncate output',
                             action='store_true')
+        parser.add_argument('-H', '--no-header',
+                            help='Don\'t show header line(s)',
+                            action='store_true')
+        parser.add_argument('-P', '--page-size',
+                            help='If list is longer than <page-size>, ask for more to continue in <page-size> intervals.\
+                                Enter 0 to avoid pagination',
+                            type=int,
+                            default=25)
         parser.add_argument('path',
                             nargs='*',
                             metavar='filesystem|path',
@@ -44,7 +51,7 @@ class List:
         table = []
         managers = []
         if options.path:
-            managers = [ Manager(path) for path in options.path ]
+            managers = [Manager(path) for path in options.path]
         else:
             managers = Manager.get_managers()
         for manager in managers:
@@ -56,7 +63,8 @@ class List:
                     'clone': clone.zfs,
                     'mountpoint': clone.mountpoint,
                     'origin': clone.origin_id if clone.origin_id else '',
-                    'date': datetime.fromtimestamp(clone.creation),
+                    'date': clone.creation,
                     'size': format_bytes(clone.size)
                 })
-        print_table(table, truncate=(not options.no_trunc))
+        print_table(table, header=(not options.no_header), truncate=(
+            not options.no_trunc), page_size=options.page_size)
