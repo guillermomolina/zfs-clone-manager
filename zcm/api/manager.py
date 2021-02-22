@@ -79,7 +79,7 @@ class Manager:
                 zfs['mountpoint'] == Path(zfs['zfs_clone_manager:path'], '.clones')]
 
     @staticmethod
-    def initialize_zfs(zfs_str, path_str):
+    def create_manager(zfs_str, path_str):
         path = Path(path_str)
         if path.exists():
             raise ZCMError('Path %s already exists, can not use it' % path_str)
