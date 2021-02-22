@@ -3,6 +3,9 @@
 ## 2021-XX-XX: Version 3.1.X
 
 - Added new check in Manager.load()
+- Added command diff
+- Added pagination to print_table (and print commands)
+- Added supress headers to print_table (and print commands)
 
 
 ## 2021-02-21: Version 3.1.0

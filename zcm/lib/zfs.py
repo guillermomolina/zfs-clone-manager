@@ -17,6 +17,7 @@ import io
 import logging
 import pathlib
 import subprocess
+from datetime import datetime
 
 log = logging.getLogger(__name__)
 
@@ -77,7 +78,7 @@ def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursi
                 # For watever reason can not set mountpoint at creation time
                 # We set this afterwards
                 #zfs_set(zfs_path, mountpoint=None)
-                
+
             is_zpool = False
 
     # Just debugging, don't fail if already created
@@ -153,6 +154,11 @@ def value_convert(property_name, value):
         return None
     if property_name in ['mountpoint', 'zfs_clone_manager:path']:
         return pathlib.Path(value)
+    if property_name in ['creation', 'st_ctim', 'mtime', 'atime', 'crtime']:
+        try:
+            return datetime.fromtimestamp(float(value))
+        except ValueError:
+            pass
     try:
         return int(value)
     except ValueError:
@@ -255,7 +261,7 @@ def zfs_is_snapshot(zfs_name):
         return False
 
 
-def zfs_diff(final_snapshot, origin_snapshot=None, include_file_types=False, recursive=False):
+def zfs_diff(zfs_name, origin_snapshot=None, include_file_types=False, recursive=False):
     # Implemented as generator, in case it is too big
     file_types = {
         'F': 'file',
@@ -268,13 +274,13 @@ def zfs_diff(final_snapshot, origin_snapshot=None, include_file_types=False, rec
         '=': 'socket'
     }
     change_types = {
-        '+': 'added',
-        '-': 'removed',
-        'M': 'modified',
-        'R': 'renamed'
+        '+': 'Added',
+        '-': 'Removed',
+        'M': 'Modified',
+        'R': 'Renamed'
     }
 
-    arguments = ['-H']
+    arguments = ['-H', '-t']
     if include_file_types:
         arguments.append('-F')
     if recursive:
@@ -283,11 +289,24 @@ def zfs_diff(final_snapshot, origin_snapshot=None, include_file_types=False, rec
         arguments.append('-E')
     else:
         arguments.append(origin_snapshot)
-    arguments.append(final_snapshot)
+    arguments.append(zfs_name)
+    mountpoint = None
+    if not '@' in zfs_name:
+        mountpoint = zfs_get(zfs_name, 'mountpoint')
     process = _zfs('diff', arguments, stdout=subprocess.PIPE)
     for line in io.TextIOWrapper(process.stdout, encoding="utf-8"):
         records = line.strip().split('\t')
-        yield records
+        data = {}
+        file = pathlib.Path(records[-1])
+        if mountpoint is not None:
+            data['mountpoint'] = mountpoint
+            file = file.relative_to(mountpoint)
+        data['date'] = value_convert('st_ctim', records[0])
+        data['change'] = change_types[records[1]]
+        data['file'] = file
+        if include_file_types:
+            data['file_type'] = file_types[records[2]]
+        yield data
 
 
 def zfs_rename(original_zfs_name, new_zfs_name):

@@ -22,6 +22,7 @@ from zcm import __version__, zcm_config
 from zcm.cli.activate import Activate
 from zcm.cli.clone import Clone
 from zcm.cli.destroy import Destroy
+from zcm.cli.difference import Difference
 from zcm.cli.information import Information
 from zcm.cli.initialize import Initialize
 from zcm.cli.list import List
@@ -51,7 +52,7 @@ class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter,
 
 
 class CLI:
-    commands = [Initialize, Information, List, Clone, Activate, Remove, Destroy]
+    commands = [Initialize, Information, List, Clone, Activate, Difference, Remove, Destroy]
 
     def __init__(self):
         parser = argparse.ArgumentParser(
