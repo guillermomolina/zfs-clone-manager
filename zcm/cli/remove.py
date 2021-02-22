@@ -41,7 +41,7 @@ class Remove:
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='Remove one or more clones',
                                               help='Remove one or more clones')
-        parser.add_argument('--force',
+        parser.add_argument('-F', '--force',
                             help='Force remove clone without confirmation',
                             action='store_true')
         parser.add_argument('path',

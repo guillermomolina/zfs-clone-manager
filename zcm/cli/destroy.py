@@ -41,7 +41,7 @@ class Destroy:
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='Destroy ZCM on path',
                                               help='Remove all ZCM metadata (filesystems, clones, snapshots and directories) associated with path')
-        parser.add_argument('--force',
+        parser.add_argument('-F', '--force',
                             help='Force destroy without confirmation',
                             action='store_true')
         parser.add_argument('path',

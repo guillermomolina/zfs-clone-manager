@@ -6,8 +6,8 @@
 - Added command diff
 - Added pagination to print_table (and print commands)
 - Added supress headers to print_table (and print commands)
-- Renamed command initialize to create
-- Renamed Manager.initialize_zfs() to Manager.create_manager()
+- Added parameter to initialize command with migration
+- Renamed Manager.initialize_zfs() to Manager.initialize_manager()
 
 
 ## 2021-02-21: Version 3.1.0

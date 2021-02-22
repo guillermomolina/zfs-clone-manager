@@ -38,7 +38,7 @@ class Initialize:
                             help='root path')
 
     def __init__(self, options):
-        Manager.initialize_zfs(options.zfs, options.path)
+        Manager.initialize_manager(options.zfs, options.path)
         if not options.quiet:
             print('ZCM initialized ZFS %s at path %s' %
                   (options.zfs, options.path))
