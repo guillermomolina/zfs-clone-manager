@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import unittest
+from datetime import datetime
 from pathlib import Path
 
 from zcm.api.manager import Manager
@@ -26,7 +27,7 @@ directory = '/my_cool_zfs_directory'
 class TestAPI(unittest.TestCase):
     def setUp(self):
         try:
-            Manager.initialize_zfs(zfs, directory)
+            Manager.create_manager(zfs, directory)
         except ZCMError:
             pass
         return super().setUp()
@@ -40,7 +41,7 @@ class TestAPI(unittest.TestCase):
 
     def test_initialize(self):
         with self.assertRaises(ZCMError):
-            Manager.initialize_zfs(zfs, directory)
+            Manager.create_manager(zfs, directory)
         clone = None
         try:
             manager = Manager(directory)
@@ -69,7 +70,7 @@ class TestAPI(unittest.TestCase):
         self.assertIsNone(manager.clones[0].origin)
         self.assertIsNone(manager.clones[0].origin_id)
         self.assertEqual(manager.clones[0].mountpoint, path)
-        self.assertIsInstance(manager.clones[0].creation, int)
+        self.assertIsInstance(manager.clones[0].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -108,7 +109,7 @@ class TestAPI(unittest.TestCase):
         self.assertIsNone(manager.clones[0].origin)
         self.assertIsNone(manager.clones[0].origin_id)
         self.assertEqual(manager.clones[0].mountpoint, path)
-        self.assertIsInstance(manager.clones[0].creation, int)
+        self.assertIsInstance(manager.clones[0].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -122,7 +123,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.clones[1].origin, '%s/%s@%s' % (zfs, '00000000', id))
         self.assertEqual(manager.clones[1].origin_id, '00000000')
         self.assertEqual(manager.clones[1].mountpoint, path)
-        self.assertIsInstance(manager.clones[1].creation, int)
+        self.assertIsInstance(manager.clones[1].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -169,7 +170,7 @@ class TestAPI(unittest.TestCase):
         self.assertIsNone(manager.clones[0].origin)
         self.assertIsNone(manager.clones[0].origin_id)
         self.assertEqual(manager.clones[0].mountpoint, path)
-        self.assertIsInstance(manager.clones[0].creation, int)
+        self.assertIsInstance(manager.clones[0].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -183,7 +184,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.clones[1].origin, '%s/%s@%s' % (zfs, '00000000', id))
         self.assertEqual(manager.clones[1].origin_id, '00000000')
         self.assertEqual(manager.clones[1].mountpoint, path)
-        self.assertIsInstance(manager.clones[1].creation, int)
+        self.assertIsInstance(manager.clones[1].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -226,7 +227,7 @@ class TestAPI(unittest.TestCase):
         self.assertIsNone(manager.clones[0].origin)
         self.assertIsNone(manager.clones[0].origin_id)
         self.assertEqual(manager.clones[0].mountpoint, path)
-        self.assertIsInstance(manager.clones[0].creation, int)
+        self.assertIsInstance(manager.clones[0].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -285,7 +286,7 @@ class TestAPI(unittest.TestCase):
         self.assertIsNone(manager.clones[0].origin)
         self.assertIsNone(manager.clones[0].origin_id)
         self.assertEqual(manager.clones[0].mountpoint, path)
-        self.assertIsInstance(manager.clones[0].creation, int)
+        self.assertIsInstance(manager.clones[0].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -328,7 +329,7 @@ class TestAPI(unittest.TestCase):
         self.assertIsNone(manager.clones[0].origin)
         self.assertIsNone(manager.clones[0].origin_id)
         self.assertEqual(manager.clones[0].mountpoint, path)
-        self.assertIsInstance(manager.clones[0].creation, int)
+        self.assertIsInstance(manager.clones[0].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -342,7 +343,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.clones[1].origin, '%s/%s@%s' % (zfs, '00000000', id))
         self.assertEqual(manager.clones[1].origin_id, '00000000')
         self.assertEqual(manager.clones[1].mountpoint, path)
-        self.assertIsInstance(manager.clones[1].creation, int)
+        self.assertIsInstance(manager.clones[1].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -356,7 +357,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.clones[2].origin, '%s/%s@%s' % (zfs, '00000000', id))
         self.assertEqual(manager.clones[2].origin_id, '00000000')
         self.assertEqual(manager.clones[2].mountpoint, path)
-        self.assertIsInstance(manager.clones[1].creation, int)
+        self.assertIsInstance(manager.clones[1].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -407,7 +408,7 @@ class TestAPI(unittest.TestCase):
         self.assertIsNone(manager.clones[0].origin)
         self.assertIsNone(manager.clones[0].origin_id)
         self.assertEqual(manager.clones[0].mountpoint, path)
-        self.assertIsInstance(manager.clones[0].creation, int)
+        self.assertIsInstance(manager.clones[0].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -421,7 +422,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.clones[1].origin, '%s/%s@%s' % (zfs, '00000000', id))
         self.assertEqual(manager.clones[1].origin_id, '00000000')
         self.assertEqual(manager.clones[1].mountpoint, path)
-        self.assertIsInstance(manager.clones[1].creation, int)
+        self.assertIsInstance(manager.clones[1].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -435,7 +436,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.clones[2].origin, '%s/%s@%s' % (zfs, '00000000', id))
         self.assertEqual(manager.clones[2].origin_id, '00000000')
         self.assertEqual(manager.clones[2].mountpoint, path)
-        self.assertIsInstance(manager.clones[2].creation, int)
+        self.assertIsInstance(manager.clones[2].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -486,7 +487,7 @@ class TestAPI(unittest.TestCase):
         self.assertIsNone(manager.clones[0].origin)
         self.assertIsNone(manager.clones[0].origin_id)
         self.assertEqual(manager.clones[0].mountpoint, path)
-        self.assertIsInstance(manager.clones[0].creation, int)
+        self.assertIsInstance(manager.clones[0].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -500,7 +501,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.clones[1].origin, '%s/%s@%s' % (zfs, '00000000', id))
         self.assertEqual(manager.clones[1].origin_id, '00000000')
         self.assertEqual(manager.clones[1].mountpoint, path)
-        self.assertIsInstance(manager.clones[1].creation, int)
+        self.assertIsInstance(manager.clones[1].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -563,7 +564,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(manager.clones[0].origin, '%s/%s@%s' % (zfs, '00000002', id))
         self.assertEqual(manager.clones[0].origin_id, '00000002')
         self.assertEqual(manager.clones[0].mountpoint, path)
-        self.assertIsInstance(manager.clones[0].creation, int)
+        self.assertIsInstance(manager.clones[0].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
@@ -577,7 +578,7 @@ class TestAPI(unittest.TestCase):
         self.assertIsNone(manager.clones[1].origin)
         self.assertIsNone(manager.clones[1].origin_id)
         self.assertEqual(manager.clones[1].mountpoint, path)
-        self.assertIsInstance(manager.clones[1].creation, int)
+        self.assertIsInstance(manager.clones[1].creation, datetime)
         self.assertTrue(zfs_is_filesystem(filesystem))
         self.assertEqual(zfs_get(filesystem, 'mountpoint'), path)
         self.assertTrue(zfs_get(filesystem, 'mounted'))
