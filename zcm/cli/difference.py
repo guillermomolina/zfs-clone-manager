@@ -49,11 +49,14 @@ class Difference:
                             metavar='filesystem|path',
                             help='zfs filesystem or path of ZCM')
         parser.add_argument('id',
-                            help='clone id')
+                            nargs='?',
+                            help='clone id',
+                            default='active')
 
     def __init__(self, options):
         manager = Manager(options.path)
-        clone = manager.get_clone(options.id)
+        id = manager.active_clone.id if options.id == 'active' else options.id
+        clone = manager.get_clone(id)
         table = zfs_diff(clone.zfs, clone.origin, include_file_types=True)
         print_table(table, header=(not options.no_header), truncate=(
             not options.no_trunc), page_size=options.page_size)
