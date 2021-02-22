@@ -57,7 +57,7 @@ class CLI:
     def __init__(self):
         parser = argparse.ArgumentParser(
             formatter_class=CustomFormatter,
-            description='A self-sufficient history tool for ZFS clones')
+            description='Tool to manage ZFS clones with history metadata')
         parser.add_argument('-V', '--version',
                             help='Print version information and quit',
                             action='version',

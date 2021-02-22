@@ -29,8 +29,8 @@ class List:
                                               parents=[parent_parser],
                                               aliases=List.aliases,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                              description='List hosts',
-                                              help='List hosts')
+                                              description='List clones',
+                                              help='List clones')
         parser.add_argument('-T', '--no-trunc',
                             help='Don\'t truncate output',
                             action='store_true')
