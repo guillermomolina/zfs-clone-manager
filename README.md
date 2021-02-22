@@ -112,3 +112,41 @@ The suggested workflow is:
     Do you want to proceed? (yes/NO) yes
     Destroyed ZCM rpool/directory
     ```
+
+
+- Initialize a ZCM manager based on an existing directory:
+
+    ```bash
+    $ zcm ls /directory
+    There is no ZCM manager at /directory
+    $ mkdir -p /directory/tmp
+    $ mkfile 10m /directory/tmp/file
+    $ zcm init -M rpool/directory /directory
+    ZCM initialized ZFS rpool/directory at path /directory
+    $ zcm ls rpool/directory
+    MANAGER          A  ID        CLONE                     MOUNTPOINT  ORIGIN  DATE                 SIZE    
+    rpool/directory  *  00000000  rpool/directory/00000000  /directory          2021-02-22 13:37:28  10.04 MB
+    $ ls /directory
+    .clones/ tmp/     
+    $ ls /directory/tmp
+    file
+    ```
+
+
+- Initialize a ZCM manager based on an existing ZFS:
+
+
+    ```bash
+    $ zfs create -o mountpoint=/directory rpool/directory
+    $ mkdir /directory/tmp
+    $ mkfile 10m /directory/tmp/file
+    $ zcm init -m rpool/directory /directory
+    ZCM initialized ZFS rpool/directory at path /directory
+    $ zcm ls rpool/directory
+    MANAGER          A  ID        CLONE                     MOUNTPOINT  ORIGIN  DATE                 SIZE    
+    rpool/directory  *  00000000  rpool/directory/00000000  /directory          2021-02-22 13:39:43  10.04 MB
+    $ ls /directory 
+    tmp
+    $ ls /directory/tmp
+    file
+    ```
