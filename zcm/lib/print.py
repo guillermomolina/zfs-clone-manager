@@ -19,7 +19,9 @@ from zcm import zcm_config
 
 # TODO: use from prettytable import PrettyTable ?
 
-def print_table(table, truncate=True, separation=2, identation=0, page_size=25):
+def print_table(table, header=True, truncate=True, separation=2, identation=0, page_size=25):
+    if page_size <= 0:
+        page_size = None
     i = iter(table)
     ask_for_more = False
     while True:
@@ -29,13 +31,13 @@ def print_table(table, truncate=True, separation=2, identation=0, page_size=25):
                 answer = input('Do you want to see more? (Y/n) ')
                 if answer and answer.upper()[0] == 'N':
                     return
-            print_table_page(page, truncate, separation, identation)
+            print_table_page(page, header, truncate, separation, identation)
             ask_for_more = True
         else:
             return
 
 
-def print_table_page(page, truncate=True, separation=2, identation=0):
+def print_table_page(page, header=True, truncate=True, separation=2, identation=0):
     MAX_COLUMN_LENGTH = zcm_config['max_column_length']
     if len(page) == 0:
         return
@@ -63,11 +65,12 @@ def print_table_page(page, truncate=True, separation=2, identation=0):
     separation_string = ' ' * separation
 
     # print headers
-    strings = [''] * identation if identation > 0 else []
-    for column in columns:
-        str_format = '{:%s}' % str(column['length'])
-        strings.append(str_format.format(column['tittle']))
-    print(separation_string.join(strings))
+    if header:
+        strings = [''] * identation if identation > 0 else []
+        for column in columns:
+            str_format = '{:%s}' % str(column['length'])
+            strings.append(str_format.format(column['tittle']))
+        print(separation_string.join(strings))
 
     for row in page:
         strings = [''] * identation if identation > 0 else []
