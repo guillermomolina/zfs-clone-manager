@@ -59,7 +59,11 @@ class List:
         else:
             managers = Manager.get_managers()
         if options.json:
-            print(json.dumps([manager.to_dictionary() for manager in managers], indent=4))
+            clones = []
+            for manager in managers:
+                for clone in manager.clones:
+                    clones.append(clone.to_dictionary())
+            print(json.dumps(clones, indent=4))
         else:
             for manager in managers:
                 for clone in manager.clones:

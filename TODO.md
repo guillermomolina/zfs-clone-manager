@@ -2,3 +2,4 @@
 
 - ZFS binary path configuration and discovery
 - Migrate back from ZCM to ZFS
+- Unify commands list and information ?
