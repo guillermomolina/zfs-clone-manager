@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import logging
 
 log = logging.getLogger(__name__)
@@ -25,4 +26,11 @@ class Clone:
         self.mountpoint = mountpoint
         self.creation = creation
         self.size = size
-        
+    
+    def to_json(self):
+        data = self.__dict__.copy()
+        data['mountpoint'] = str(self.mountpoint)
+        data['creation'] = str(self.creation)
+
+        return json.dumps(data, indent=4)
+       

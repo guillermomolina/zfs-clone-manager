@@ -8,6 +8,7 @@
 - Changed shutil.copytree and shutil.copy2 to "cd source; tar cf - . | (cd target; tar xf -)" command
 - Fixed "option not recongnized" bug in zfs/get_cmd()
 - Library zfs* functions now raise ZFSError on error and returns stdout instead of returncode
+- Added JSON output to command clone
 
 
 ## 2021-02-22: Version 3.2.1

@@ -32,6 +32,9 @@ class Clone:
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='Create a new clone from the active clone',
                                               help='Create a new clone')
+        parser.add_argument('-j', '--json',
+                            action='store_true',
+                            help='Output a JSON object')
         parser.add_argument('-m', '--max-newer',
                             type=check_one_or_more,
                             help='Do not create if there are <max-newer> newer clones')
@@ -50,5 +53,8 @@ class Clone:
         clone = manager.clone(
             options.max_newer, options.max_total, options.auto_remove)
         if not options.quiet:
-            print('Created clone %s at path %s' %
-                  (clone.id, clone.mountpoint))
+            if options.json:
+                print(clone.to_json())
+            else:
+                print('Created clone %s at path %s' %
+                    (clone.id, clone.mountpoint))

@@ -61,7 +61,7 @@ class List:
                     'a': '*' if manager.active_clone == clone else ' ',
                     'id': clone.id,
                     'clone': clone.zfs,
-                    'mountpoint': clone.mountpoint,
+                    'mountpoint': str(clone.mountpoint),
                     'origin': clone.origin_id if clone.origin_id else '',
                     'date': clone.creation,
                     'size': format_bytes(clone.size)
