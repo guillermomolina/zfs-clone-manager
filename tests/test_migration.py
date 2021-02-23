@@ -18,7 +18,7 @@ from pathlib import Path
 
 from zcm.api.manager import Manager
 from zcm.exceptions import ZCMError, ZCMException
-from zcm.lib.zfs import zfs_create, zfs_destroy
+from zcm.lib.zfs import ZFSError, zfs_create, zfs_destroy
 
 zfs = 'rpool/my/cool/zfs/directory'
 directory = '/my_cool_zfs_directory'
@@ -35,7 +35,10 @@ class TestAPI(unittest.TestCase):
             f.write('SOME TEXT')
         with self.assertRaises(ZCMError):
             Manager.initialize_manager(zfs, directory)
-        self.assertEqual(zfs_destroy(zfs), 0)
+        try:
+            zfs_destroy(zfs)
+        except ZFSError:
+            self.fail('zfs_destroy should not raise exceptions')
         self.assertFalse(temp_file.exists())
         path.rmdir()
 

@@ -22,11 +22,17 @@ from datetime import datetime
 log = logging.getLogger(__name__)
 
 
+class ZFSError(Exception):
+    def __init__(self, message="ZFS Error"):
+        super().__init__()
+        self.message = message
+
+
 def get_cmd(command,  arguments, options):
     cmd = ['/usr/sbin/zfs', command]
     if options is not None:
         for option in options:
-            cmd += ['-o', '"' + option + '"']
+            cmd += ['-o', option]
     if arguments is not None:
         cmd += arguments
     log.debug('Running command: "' + ' '.join(cmd) + '"')
@@ -41,8 +47,6 @@ def _zfs(command,  arguments=None, options=None, stdout=None):
 def zfs(command,  arguments=None, options=None):
     cmd = get_cmd(command, arguments, options)
     process = subprocess.run(cmd, capture_output=True, text=True)
-    #import debugpy
-    # debugpy.breakpoint()
     if process.stdout:
         for line in iter(process.stdout.splitlines()):
             log.info(line)
@@ -52,7 +56,9 @@ def zfs(command,  arguments=None, options=None):
                 log.warning(line)
             else:
                 log.error(line)
-    return process.returncode
+    if process.returncode != 0:
+        raise ZFSError(process.stderr)
+    return process.stdout
 
 
 def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursive=False, zcm_path=None):
@@ -73,32 +79,21 @@ def zfs_create(zfs_name, parent=None, mountpoint=None, compression=None, recursi
             if not zfs_is_filesystem(zfs_path):
                 if is_zpool:
                     return None
-                if zfs('create', [zfs_path]) != 0:
-                    return None
-                # For watever reason can not set mountpoint at creation time
-                # We set this afterwards
-                #zfs_set(zfs_path, mountpoint=None)
+                zfs('create', [zfs_path])
 
             is_zpool = False
-
-    # Just debugging, don't fail if already created
-    # if(destroy(filesystem, recursive=True) == 0):
-    #    print('WARNING: Deleting filesystem (%s) ' % filesystem)
 
     options = []
     if compression is not None:
         options.append('compression=' + compression)
+    if mountpoint is not None:
+        options.append('mountpoint=' + str(mountpoint))
+    if zcm_path is not None:
+        options.append('zfs_clone_manager:path=' + str(zcm_path))
     if len(options) == 0:
         options = None
-    if zfs('create', [filesystem], options) == 0:
-        # For watever reason can not set this properties at creation time
-        # We set them afterwards
-        if mountpoint is not None:
-            zfs_set(filesystem, mountpoint=mountpoint)
-        if zcm_path is not None:
-            zfs_set(filesystem, zcm_path=zcm_path)
-        return filesystem
-    return None
+    zfs('create', [filesystem], options)
+    return filesystem
 
 
 def zfs_clone(zfs_name, snapshot, parent=None, mountpoint=None):
@@ -109,31 +104,24 @@ def zfs_clone(zfs_name, snapshot, parent=None, mountpoint=None):
     filesystem = zfs_name
     if parent is not None:
         filesystem = parent + '/' + zfs_name
-
-    # Just debugging, don't fail if already created
-    # if(destroy(filesystem, recursive=True) == 0):
-    #    print('WARNING: Deleting filesystem (%s) ' % filesystem)
-
     options = []
     if mountpoint is not None:
         options.append('mountpoint=' + str(mountpoint))
-    if zfs('clone', [snapshot, filesystem], options) == 0:
-        return filesystem
-
-    return None
+    zfs('clone', [snapshot, filesystem], options)
+    return filesystem
 
 
 def zfs_set(zfs_name, readonly=None, mountpoint=None, zcm_path=None):
-    result = 0
+    result = []
     if readonly is not None:
         option = 'readonly=' + ('on' if readonly else 'off')
-        result |= zfs('set', [option, zfs_name])
+        result.append(zfs('set', [option, zfs_name]))
     if mountpoint is not None:
-        result |= zfs('set', ['mountpoint=' + str(mountpoint), zfs_name])
+        result.append(zfs('set', ['mountpoint=' + str(mountpoint), zfs_name]))
     if zcm_path is not None:
-        result |= zfs(
-            'set', ['zfs_clone_manager:path=' + str(zcm_path), zfs_name])
-    return result
+        result.append(zfs(
+            'set', ['zfs_clone_manager:path=' + str(zcm_path), zfs_name]))
+    return '\n'.join(result)
 
 
 def zfs_inherit(zfs_name, property_name):
@@ -178,9 +166,8 @@ def zfs_snapshot(zfs_name, filesystem, recursive=False):
         arguments.append('-r')
     snapshot = filesystem + '@' + zfs_name
     arguments.append(snapshot)
-    if zfs('snapshot', arguments) == 0:
-        return snapshot
-    return None
+    zfs('snapshot', arguments)
+    return snapshot
 
 
 def zfs_destroy(zfs_name, recursive=False, synchronous=True):
