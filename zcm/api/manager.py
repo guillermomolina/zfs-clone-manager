@@ -120,6 +120,7 @@ class Manager:
             if zfs_rename(random_zfs, zfs_str + '/00000000'):
                 raise ZCMError(
                     'Could not rename ZFS from %s to %s' % (random_zfs, zfs_str + '/00000000'))
+            zfs_mount(zfs_str + '/00000000')
             if zfs_mount(zfs_str):
                 raise ZCMError(
                     'Could not mount ZFS ' + zfs_str)
@@ -138,7 +139,9 @@ class Manager:
         if zfs is None:
             raise ZCMError('Could not create ZFS %s at %s' %
                            (zfs_str, path_str))
+        zfs_mount(zfs['name'])
         zfs_set(zfs_str, mountpoint=Path(path, '.clones'), zcm_path=path_str)
+        zfs_mount(zfs_str)
         log.info('Created ZCM %s at path %s' % (zfs_str, path_str))
         if original_path:
             try:
