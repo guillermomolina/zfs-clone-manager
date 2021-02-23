@@ -123,16 +123,11 @@ def zfs_clone(zfs_name, snapshot, parent=None, mountpoint=None):
     return None
 
 
-def zfs_set(zfs_name, readonly=None, mountpoint=None, mounted=None, zcm_path=None):
+def zfs_set(zfs_name, readonly=None, mountpoint=None, zcm_path=None):
     result = 0
     if readonly is not None:
         option = 'readonly=' + ('on' if readonly else 'off')
         result |= zfs('set', [option, zfs_name])
-    if mounted is not None:
-        if mounted:
-            result |= zfs('mount', [zfs_name])
-        else:
-            result |= zfs('unmount', [zfs_name])
     if mountpoint is not None:
         result |= zfs('set', ['mountpoint=' + str(mountpoint), zfs_name])
     if zcm_path is not None:
@@ -142,7 +137,7 @@ def zfs_set(zfs_name, readonly=None, mountpoint=None, mounted=None, zcm_path=Non
 
 
 def zfs_inherit(zfs_name, property_name):
-    zfs('inherit', [property_name, zfs_name])
+    return zfs('inherit', [property_name, zfs_name])
 
 
 def value_convert(property_name, value):
@@ -312,3 +307,11 @@ def zfs_diff(zfs_name, origin_snapshot=None, include_file_types=False, recursive
 def zfs_rename(original_zfs_name, new_zfs_name):
     arguments = [original_zfs_name, new_zfs_name]
     return zfs('rename', arguments)
+
+
+def zfs_mount(zfs_name):
+    return zfs('mount', [zfs_name])
+
+
+def zfs_unmount(zfs_name):
+    return zfs('unmount', [zfs_name])

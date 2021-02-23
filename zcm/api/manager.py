@@ -20,8 +20,8 @@ from zcm.api.clone import Clone
 from zcm.exceptions import ZCMError, ZCMException
 from zcm.lib.helpers import id_generator
 from zcm.lib.zfs import (zfs_clone, zfs_create, zfs_destroy, zfs_exists,
-                         zfs_inherit, zfs_list, zfs_promote, zfs_rename,
-                         zfs_set, zfs_snapshot)
+                         zfs_inherit, zfs_list, zfs_mount, zfs_promote,
+                         zfs_rename, zfs_set, zfs_snapshot, zfs_unmount)
 
 log = logging.getLogger(__name__)
 
@@ -114,13 +114,13 @@ class Manager:
                 raise ZCMError('Could not create ZFS %s at %s' %
                             (zfs_str, path_str))
            
-            if zfs_set(zfs_str, mounted=False):
+            if zfs_unmount(zfs_str):
                 raise ZCMError(
                     'Could not umount ZFS ' + zfs_str)
             if zfs_rename(random_zfs, zfs_str + '/00000000'):
                 raise ZCMError(
                     'Could not rename ZFS from %s to %s' % (random_zfs, zfs_str + '/00000000'))
-            if zfs_set(zfs_str, mounted=True):
+            if zfs_mount(zfs_str):
                 raise ZCMError(
                     'Could not mount ZFS ' + zfs_str)
             log.info('Migrated ZFS %s at path %s to ZCM' % (zfs_str, path_str))
@@ -258,12 +258,12 @@ class Manager:
         failed = []
         for clone in self.clones:
             if clone != self.active_clone:
-                if zfs_set(clone.zfs, mounted=False) != 0:
+                if zfs_unmount(clone.zfs) != 0:
                     failed.append(clone.zfs)
-        if zfs_set(self.zfs, mounted=False) != 0:
+        if zfs_unmount(self.zfs) != 0:
             failed.append(self.zfs)
         if self.active_clone is not None:
-            if zfs_set(self.active_clone.zfs, mounted=False) != 0:
+            if zfs_unmount(self.active_clone.zfs) != 0:
                 failed.append(self.active_clone.zfs)
         if failed:
             # at lest one unmount failed, remount all and fail
@@ -274,11 +274,11 @@ class Manager:
     def mount(self):
         if not self.active_clone:
             raise ZCMError('There is no active clone, activate one first')
-        zfs_set(self.active_clone.zfs, mounted=True)
-        zfs_set(self.zfs, mounted=True)
+        zfs_mount(self.active_clone.zfs)
+        zfs_mount(self.zfs)
         for clone in self.clones:
             if clone != self.active_clone:
-                zfs_set(clone.zfs, mounted=True)
+                zfs_mount(clone.zfs)
 
     def activate(self, id, max_newer=None, max_older=None, max_total=None, auto_remove=False):
         next_active = self.get_clone(id)
