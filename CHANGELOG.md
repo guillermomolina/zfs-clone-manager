@@ -1,7 +1,7 @@
 # Change log for ZFS Clone Manager
 
 
-## 2021-XX-XX: Version 3.3.0
+## 2021-02-23: Version 3.3.0
 
 - Changed zfs_set(zfs_name,mounted=*) to zfs_[un]mount(zfs_name)
 - Fix zfs not mounted after migration
