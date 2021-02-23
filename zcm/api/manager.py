@@ -18,7 +18,7 @@ from pathlib import Path
 
 from zcm.api.clone import Clone
 from zcm.exceptions import ZCMError, ZCMException
-from zcm.lib.helpers import id_generator
+from zcm.lib.helpers import copy_directory, id_generator
 from zcm.lib.zfs import (zfs_clone, zfs_create, zfs_destroy, zfs_exists,
                          zfs_inherit, zfs_list, zfs_mount, zfs_promote,
                          zfs_rename, zfs_set, zfs_snapshot, zfs_unmount)
@@ -133,30 +133,18 @@ class Manager:
                     'Path %s already exists, will not initialize a manager' % path_str)
             random_id = id_generator()
             original_path = Path(path.parents[0], random_id)
-            path.rename(original_path)           
-        zfs = zfs_create('00000000', zfs_str, mountpoint=path,
-                         recursive=True)
-        if zfs is None:
-            raise ZCMError('Could not create ZFS %s at %s' %
-                           (zfs_str, path_str))
-        zfs_mount(zfs['name'])
-        zfs_set(zfs_str, mountpoint=Path(path, '.clones'), zcm_path=path_str)
+            path.rename(original_path)  
+        zfs_create(zfs_str, zcm_path=path_str, recursive=True)
+        zfs_unmount(zfs_str)
+        zfs_create('00000000', zfs_str, mountpoint=path)
+        zfs_set(zfs_str, mountpoint=Path(path, '.clones'))
         zfs_mount(zfs_str)
         log.info('Created ZCM %s at path %s' % (zfs_str, path_str))
         if original_path:
-            try:
-                # python >= 3.8
-                #shutil.copytree(original_path, path, symlinks=True, dirs_exist_ok=True)
-                # python < 3.8:
-                for each_file in original_path.glob('*'): 
-                    if each_file.is_dir():
-                        shutil.copytree(each_file, path.joinpath(each_file.name), symlinks=True)
-                    else:
-                        shutil.copy2(each_file, path.joinpath(each_file.name))
-                shutil.rmtree(original_path)
-                log.info('Moved content of path %s to clone' % path_str)
-            except:
+            if copy_directory(original_path, path) != 0:
                 raise ZCMError('Could not move content of original directory, kept at %s' % original_path)
+            shutil.rmtree(original_path)
+            log.info('Moved content of path %s to clone' % path_str)
            
 
     def load(self):

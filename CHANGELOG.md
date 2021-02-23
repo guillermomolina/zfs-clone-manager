@@ -1,9 +1,12 @@
 # Change log for ZFS Clone Manager
 
-## 2021-XX-XX: Version 3.2.2
+
+## 2021-02-23: Version 3.2.2
 
 - Changed zfs_set(zfs_name,mounted=*) to zfs_[un]mount(zfs_name)
 - Fix zfs not mounted after migration
+- Changed shutil.copytree and shutil.copy2 to "cd source; tar cf - . | (cd target; tar xf -)" command
+- Fixed "option not recongnized" bug in zfs/get_cmd()
 
 
 ## 2021-02-22: Version 3.2.1
