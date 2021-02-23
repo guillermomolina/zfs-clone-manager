@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
+
 import logging
 
 log = logging.getLogger(__name__)
+
 
 class Clone:
     def __init__(self, id, zfs, origin, origin_id, mountpoint, creation, size):
@@ -26,11 +27,14 @@ class Clone:
         self.mountpoint = mountpoint
         self.creation = creation
         self.size = size
-    
-    def to_json(self):
-        data = self.__dict__.copy()
-        data['mountpoint'] = str(self.mountpoint)
-        data['creation'] = str(self.creation)
 
-        return json.dumps(data, indent=4)
-       
+    def to_dictionary(self):
+        return {
+            'id': self.id,
+            'zfs': self.zfs,
+            'origin': self.origin,
+            'origin_id': self.origin_id,
+            'mountpoint': str(self.mountpoint),
+            'creation': str(self.creation),
+            'size':self.size
+        }

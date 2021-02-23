@@ -344,3 +344,15 @@ class Manager:
             raise ZCMError(e.message)            
         except OSError as e:
             raise ZCMError('Could not destroy path ' + self.path)
+
+    def to_dictionary(self):
+        return {
+            'zfs': self.zfs,
+            'path': str(self.path),
+            'size': self.size,
+            'clones': [ clone.to_dictionary() for clone in self.clones ],
+            'older_clones': [ clone.id for clone in self.older_clones ],
+            'newer_clones': [ clone.id for clone in self.newer_clones ],
+            'active_clone': self.active_clone.id,
+            'next_id': self.next_id
+        }

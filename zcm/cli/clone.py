@@ -14,6 +14,7 @@
 
 
 import argparse
+import json
 
 from zcm.api.manager import Manager
 from zcm.lib.helpers import check_one_or_more
@@ -54,7 +55,7 @@ class Clone:
             options.max_newer, options.max_total, options.auto_remove)
         if not options.quiet:
             if options.json:
-                print(clone.to_json())
+                print(json.dumps(clone.to_dictionary(), indent=4))
             else:
                 print('Created clone %s at path %s' %
                     (clone.id, clone.mountpoint))

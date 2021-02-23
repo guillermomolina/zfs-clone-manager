@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import argparse
+import json
 
 from zcm.api.manager import Manager
 from zcm.lib.print import format_bytes, print_table
@@ -31,6 +32,9 @@ class List:
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                               description='List clones',
                                               help='List clones')
+        parser.add_argument('-j', '--json',
+                            action='store_true',
+                            help='Output a JSON object')
         parser.add_argument('-T', '--no-trunc',
                             help='Don\'t truncate output',
                             action='store_true')
@@ -54,17 +58,20 @@ class List:
             managers = [Manager(path) for path in options.path]
         else:
             managers = Manager.get_managers()
-        for manager in managers:
-            for clone in manager.clones:
-                table.append({
-                    'manager': manager.zfs,
-                    'a': '*' if manager.active_clone == clone else ' ',
-                    'id': clone.id,
-                    'clone': clone.zfs,
-                    'mountpoint': str(clone.mountpoint),
-                    'origin': clone.origin_id if clone.origin_id else '',
-                    'date': clone.creation,
-                    'size': format_bytes(clone.size)
-                })
-        print_table(table, header=(not options.no_header), truncate=(
-            not options.no_trunc), page_size=options.page_size)
+        if options.json:
+            print(json.dumps([manager.to_dictionary() for manager in managers], indent=4))
+        else:
+            for manager in managers:
+                for clone in manager.clones:
+                    table.append({
+                        'manager': manager.zfs,
+                        'a': '*' if manager.active_clone == clone else ' ',
+                        'id': clone.id,
+                        'clone': clone.zfs,
+                        'mountpoint': str(clone.mountpoint),
+                        'origin': clone.origin_id if clone.origin_id else '',
+                        'date': clone.creation,
+                        'size': format_bytes(clone.size)
+                    })
+            print_table(table, header=(not options.no_header), truncate=(
+                not options.no_trunc), page_size=options.page_size)
