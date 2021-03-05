@@ -20,9 +20,8 @@ from zcm.api.clone import Clone
 from zcm.exceptions import ZCMError, ZCMException
 from zcm.lib.helpers import copy_directory, id_generator
 from zcm.lib.zfs import (ZFSError, zfs_clone, zfs_create, zfs_destroy,
-                         zfs_exists, zfs_inherit, zfs_list, zfs_mount,
-                         zfs_promote, zfs_rename, zfs_set, zfs_snapshot,
-                         zfs_unmount)
+                         zfs_inherit, zfs_list, zfs_mount, zfs_promote,
+                         zfs_rename, zfs_set, zfs_snapshot, zfs_unmount)
 
 log = logging.getLogger(__name__)
 

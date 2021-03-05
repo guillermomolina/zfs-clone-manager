@@ -1,6 +1,11 @@
 # Change log for ZFS Clone Manager
 
 
+## 2021-03-05: Version 3.4.0
+
+- Addded __main__.py for calling zcm as module (with python -m zcm)
+- Added solaris packaging information
+
 ## 2021-02-23: Version 3.3.0
 
 - Changed zfs_set(zfs_name,mounted=*) to zfs_[un]mount(zfs_name)

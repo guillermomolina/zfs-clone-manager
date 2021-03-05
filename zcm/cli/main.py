@@ -14,11 +14,9 @@
 
 
 import argparse
-import importlib
 import logging
-from pathlib import Path
 
-from zcm import __version__, zcm_config
+from zcm import __version__
 from zcm.cli.activate import Activate
 from zcm.cli.clone import Clone
 from zcm.cli.destroy import Destroy

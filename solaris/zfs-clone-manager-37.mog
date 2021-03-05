@@ -1,0 +1,30 @@
+# Copyright 2021, Guillermo Adrián Molina
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+set name=pkg.fmri \
+    value=pkg:/library/python/zfs-clone-manager-37@$(COMPONENT_VERSION),5.11-11.4
+set name=pkg.summary value="Manage ZFS clones with history metadata."
+set name=pkg.description value="A Python library and tool to manage ZFS clones with history metadata."
+set name=com.oracle.info.description value="the Python zcm module"
+set name=info.classification \
+    value="org.opensolaris.category.2008:System/Administration and Configuration"
+set name=info.source-url value=pypi:///zfs-clone-manager==$(COMPONENT_VERSION)
+set name=info.upstream-url value=https://github.com/guillermomolina/zfs-clone-manager
+set name=com.oracle.info.version value=$(COMPONENT_VERSION)
+
+license LICENSE license="Apache v2.0"
+
+<transform dir path=^usr$ -> edit group bin sys>
+<transform file path=^usr/bin/zcm$ -> edit mode 0644 0555>

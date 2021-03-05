@@ -1,3 +1,5 @@
+#!/usr/bin/python3.7
+
 # Copyright 2021, Guillermo Adrián Molina
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,4 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from zcm.cli.main import CLI
+
+__requires__ = 'zfs-clone-manager'
+import re
+import sys
+from pkg_resources import load_entry_point
+
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+    sys.exit(
+        load_entry_point('zfs-clone-manager', 'console_scripts', 'zcm')()
+    )
